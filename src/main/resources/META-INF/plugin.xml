@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>ir.msdehghan.plugins.ansible</id>
+    <name>Ansible</name>
+    <vendor email="msdn@gmail.com" url="http://msdehghan.ir">msdehghan</vendor>
+
+    <description><![CDATA[
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae dicta eius et nobis numquam obcaecati
+     quidem quod similique tempore vitae. At blanditiis consectetur deleniti, dolorem doloribus eos esse, perferendis praesentium provident quam, quasi quos reprehenderit repudiandae tenetur unde vel voluptas.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.contributor language="yaml" implementationClass="ir.msdehghan.plugins.ansible.AnsibleCompletionContributor"/>
+        <documentationProvider implementation="ir.msdehghan.plugins.ansible.AnsiblePlayDocProvider" />
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
