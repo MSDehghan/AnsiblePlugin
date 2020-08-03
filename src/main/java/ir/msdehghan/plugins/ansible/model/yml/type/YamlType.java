@@ -10,4 +10,9 @@ public abstract class YamlType {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "YamlType:" + name;
+    }
 }

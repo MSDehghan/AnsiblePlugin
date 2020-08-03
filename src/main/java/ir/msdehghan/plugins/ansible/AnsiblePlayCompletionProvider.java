@@ -5,16 +5,14 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
-import ir.msdehghan.plugins.ansible.model.ansible.AnsiblePlay;
-import ir.msdehghan.plugins.ansible.model.yml.YamlField;
 import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor;
+import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor.ElementSchemaInfo;
+import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.ValueProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.jetbrains.yaml.psi.YAMLMapping;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,30 +23,20 @@ public class AnsiblePlayCompletionProvider extends CompletionProvider<Completion
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         PsiElement element = parameters.getPosition();
 
-        System.out.println(model.locate(element));
+        final ElementSchemaInfo schemaPosition = model.locate(element);
+        if (schemaPosition == null || schemaPosition.getType() == null) return;
+        final YamlType type = schemaPosition.getType();
 
-        if (!AnsibleUtil.isPlaybookField(element)) return;
-        List<YamlField> fields = AnsibleModels.PLAY.getFields();
-
-        if (AnsibleUtil.isKey(element)) {
-            Set<String> siblings = getMappingSiblings(element);
-
-            for (YamlField field : fields) {
-                if (siblings.contains(field.getName())) continue;
-                result.addElement(field.getLookupElement());
-            }
-
-        } else if (AnsibleUtil.isScalarValue(element)) {
-            String key = ((YAMLKeyValue) element.getParent().getParent()).getKeyText();
-
-            for (YamlField f : fields) {
-                if (f.getName().equals(key) && f.getDefaultType() instanceof ValueProvider) {
-                    result.addAllElements(((ValueProvider) f.getDefaultType()).getValueLookups());
-                    return;
+        switch (schemaPosition.getRelation()) {
+            case Scalar:
+                if (type instanceof ValueProvider) {
+                    result.addAllElements(((ValueProvider) type).getValueLookups());
                 }
-            }
-
+                break;
+            case Mapping:
+            case Sequence:
         }
+
 
     }
 

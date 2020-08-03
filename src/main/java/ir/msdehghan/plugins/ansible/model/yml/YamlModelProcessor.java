@@ -3,14 +3,11 @@ package ir.msdehghan.plugins.ansible.model.yml;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ObjectUtils;
-import ir.msdehghan.plugins.ansible.AnsibleUtil;
 import ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
-
-import java.util.Optional;
 
 public class YamlModelProcessor {
     private final YamlField rootField;
@@ -19,7 +16,7 @@ public class YamlModelProcessor {
         this.rootField = rootField;
     }
 
-    public FieldAndValueRelation locate(PsiElement element) {
+    public ElementSchemaInfo locate(PsiElement element) {
         YAMLValue value;
         if (element instanceof YAMLValue) {
             value = (YAMLValue) element;
@@ -31,13 +28,13 @@ public class YamlModelProcessor {
 
         PsiElement parent = PsiTreeUtil.getParentOfType(value, YAMLKeyValue.class, YAMLSequenceItem.class, YAMLDocument.class);
         if (parent instanceof YAMLDocument) {
-            return FieldAndValueRelation.createOrNull(rootField, Relation.Mapping);
+            return ElementSchemaInfo.createOrNull(rootField, Relation.Mapping);
         } else if (parent instanceof YAMLSequenceItem) {
-            return FieldAndValueRelation.createOrNull(locate(parent.getParent()).getField(), Relation.Sequence);
+            return ElementSchemaInfo.createOrNull(locate(parent.getParent()).getField(), Relation.Sequence);
         } else if (parent instanceof YAMLKeyValue) {
             YAMLKeyValue keyValue = (YAMLKeyValue) parent;
-            FieldAndValueRelation parentField = locate(keyValue.getParent());
-            YamlMappingType parentType = ObjectUtils.tryCast(parentField.getFieldValueType(), YamlMappingType.class);
+            ElementSchemaInfo parentField = locate(keyValue.getParent());
+            YamlMappingType parentType = ObjectUtils.tryCast(parentField.getType(), YamlMappingType.class);
 
             if (parentType == null) return null;
             YamlField field = parentType.getFieldByName(keyValue.getKeyText()).orElse(null);
@@ -46,7 +43,7 @@ public class YamlModelProcessor {
             if (value instanceof YAMLSequence) relation = Relation.Sequence;
             else if (value instanceof YAMLScalar && isValue((YAMLScalar) value)) relation = Relation.Scalar;
 
-            return FieldAndValueRelation.createOrNull(field, relation);
+            return ElementSchemaInfo.createOrNull(field, relation);
         }
         return null;
     }
@@ -59,7 +56,7 @@ public class YamlModelProcessor {
         return beforeSibling != null && beforeSibling.getNode().getElementType() == YAMLTokenTypes.SCALAR_KEY;
     }
 
-    public static class FieldAndValueRelation {
+    public static class ElementSchemaInfo {
         private final YamlField field;
         private final Relation relation;
 
@@ -71,17 +68,17 @@ public class YamlModelProcessor {
             return relation;
         }
 
-        public YamlType getFieldValueType() {
+        public YamlType getType() {
             return field.getType(relation);
         }
 
-        public FieldAndValueRelation(YamlField field, Relation relation) {
+        public ElementSchemaInfo(YamlField field, Relation relation) {
             this.field = field;
             this.relation = relation;
         }
 
-        public static FieldAndValueRelation createOrNull(YamlField field, Relation relation) {
-            return field == null ? null : new FieldAndValueRelation(field, relation);
+        public static ElementSchemaInfo createOrNull(YamlField field, Relation relation) {
+            return field == null ? null : new ElementSchemaInfo(field, relation);
         }
 
         @Override
@@ -89,7 +86,7 @@ public class YamlModelProcessor {
             return "FieldAndValueRelation{" +
                     "field=" + field.getName() +
                     ", relation=" + relation +
-                    ", valueType=" + getFieldValueType() +
+                    ", type=" + getType() +
                     '}';
         }
     }
