@@ -1,7 +1,10 @@
 package ir.msdehghan.plugins.ansible.model.ansible;
 
+import ir.msdehghan.plugins.ansible.model.ansible.play.VarsPrompt;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
+
+import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.*;
 
 public class AnsiblePlay extends YamlMappingType {
     public AnsiblePlay() {
@@ -48,17 +51,21 @@ public class AnsiblePlay extends YamlMappingType {
         addField("gather_facts").setType(YamlTypes.BOOLEAN)
                 .setDescription("A boolean that controls if the play will automatically run the 'setup' task to gather facts for the hosts.");
 
-        addField("gather_subset").setType(YamlTypes.STRING)
+        addField("gather_subset")
+                .setType(YamlTypes.STRING)
+                .setType(Sequence, YamlTypes.STRING)
                 .setDescription("Allows you to pass subset options to the fact gathering plugin controlled by gather_facts.");
 
-        addField("gather_timeout").setType(YamlTypes.STRING)
+        addField("gather_timeout").setType(YamlTypes.INTEGER)
                 .setDescription("Allows you to set the timeout for the fact gathering plugin controlled by gather_facts.");
 
         addField("handlers").setType(YamlTypes.STRING)
                 .setDescription("A section with tasks that are treated as handlers, these won't get executed normally, only when notified after each section of tasks is complete. A handler's listen field is not templatable.");
 
-        addField("hosts").setType(YamlTypes.STRING).setRequired()
-                .setDescription("A list of groups, hosts or host pattern that translates into a list of hosts that are the play's target.");
+        addField("hosts").setRequired()
+                .setDescription("A list of groups, hosts or host pattern that translates into a list of hosts that are the play's target.")
+                .setType(Scalar, YamlTypes.STRING, true)
+                .setType(Sequence, YamlTypes.STRING);
 
         addField("ignore_errors").setType(YamlTypes.BOOLEAN)
                 .setDescription("Boolean that allows you to ignore task failures and continue with play. It does not affect connection errors.");
@@ -105,7 +112,9 @@ public class AnsiblePlay extends YamlMappingType {
         addField("strategy").setType(YamlTypes.STRING)
                 .setDescription("Allows you to choose the connection plugin to use for the play.");
 
-        addField("tags").setType(YamlTypes.ANY)
+        addField("tags")
+                .setType(YamlTypes.STRING)
+                .setType(Sequence, YamlTypes.STRING)
                 .setDescription("Tags applied to the task or included tasks, this allows selecting subsets of tasks from the command line.");
 
         addField("tasks").setType(YamlTypes.ANY)
@@ -117,10 +126,12 @@ public class AnsiblePlay extends YamlMappingType {
         addField("vars").setType(YamlTypes.ANY)
                 .setDescription("Dictionary/map of variables.");
 
-        addField("vars_files").setType(YamlTypes.ANY)
+        addField("vars_files")
+                .setType(YamlTypes.STRING)
+                .setType(Sequence, YamlTypes.STRING)
                 .setDescription("List of files that contain vars to include in the play.");
 
-        addField("vars_prompt").setType(YamlTypes.ANY)
+        addField("vars_prompt").setType(Mapping, new VarsPrompt(), true)
                 .setDescription("list of variables to prompt for.");
 
         addField("user").setType(YamlTypes.STRING).setDeprecated()

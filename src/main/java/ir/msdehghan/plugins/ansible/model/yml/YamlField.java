@@ -81,6 +81,10 @@ public class YamlField {
         return this;
     }
 
+    public YamlField setType(Relation relation, YamlType type) {
+        return setType(relation, type, false);
+    }
+
     public YamlField setType(Relation relation, YamlType type, boolean setAsDefault) {
         if (setAsDefault) defaultValueRelation = relation;
         valueTypeMap.put(relation, type);
