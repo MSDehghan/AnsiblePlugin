@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.Scalar;
-
 public class AnsiblePlayCompletionProvider extends CompletionProvider<CompletionParameters> {
     private static final YamlModelProcessor model = new YamlModelProcessor(AnsibleModels.ROOT_PLAY_FIELD);
 
