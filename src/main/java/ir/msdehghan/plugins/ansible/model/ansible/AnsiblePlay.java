@@ -4,43 +4,16 @@ import ir.msdehghan.plugins.ansible.model.ansible.play.VarsPrompt;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
 
+import java.util.Arrays;
+
 import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.*;
 
 public class AnsiblePlay extends YamlMappingType {
     public AnsiblePlay() {
-        super("AnsiblePlay", 40);
+        super("AnsiblePlay", 18 + AnsibleFields.BASE.size() + AnsibleFields.TAGGABLE.size());
 
-        addField("any_errors_fatal").setType(YamlTypes.STRING)
-                .setDescription("Force any un-handled task errors on any host to propagate to all hosts and end the play.");
-
-        addField("become").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that controls if privilege escalation is used or not on Task execution.");
-
-        addField("become_exe").setType(YamlTypes.STRING);
-
-        addField("become_flags").setType(YamlTypes.STRING)
-                .setDescription("A string of flag(s) to pass to the privilege escalation program when become is True.");
-
-        addField("become_method").setType(YamlTypes.STRING)
-                .setDescription("Which method of privilege escalation to use (such as sudo or su).");
-
-        addField("become_user").setType(YamlTypes.STRING)
-                .setDescription("User that you 'become' after using privilege escalation. The remote/login user must have permissions to become this user.");
-
-        addField("check_mode").setType(YamlTypes.BOOLEAN)
-                .setDescription("A boolean that controls if a task is executed in 'check' mode");
-
-        addField("connection").setType(YamlTypes.STRING)
-                .setDescription("Allows you to change the connection plugin used for tasks to execute on the target.");
-
-        addField("debugger").setType(YamlTypes.STRING)
-                .setDescription("Enable debugging tasks based on state of the task result. See Playbook Debugger");
-
-        addField("diff").setType(YamlTypes.STRING)
-                .setDescription("Toggle to make tasks return 'diff' information or not.");
-
-        addField("environment").setType(YamlTypes.ANY)
-                .setDescription("A dictionary that gets converted into environment vars to be provided for the task upon execution. This cannot affect Ansible itself nor its configuration, it just sets the variables for the code responsible for executing the task.");
+        AnsibleFields.BASE.forEach(this::addField);
+        AnsibleFields.TAGGABLE.forEach(this::addField);
 
         addField("fact_path").setType(YamlTypes.STRING)
                 .setDescription("Set the fact path option for the fact gathering plugin controlled by gather_facts.");
@@ -67,64 +40,29 @@ public class AnsiblePlay extends YamlMappingType {
                 .setType(Scalar, YamlTypes.STRING, true)
                 .setType(Sequence, YamlTypes.STRING);
 
-        addField("ignore_errors").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that allows you to ignore task failures and continue with play. It does not affect connection errors.");
-
-        addField("ignore_unreachable").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that allows you to ignore unreachable hosts and continue with play. This does not affect other task errors (see ignore_errors) but is useful for groups of volatile/ephemeral hosts.");
-
         addField("max_fail_percentage").setType(YamlTypes.STRING)
                 .setDescription("can be used to abort the run after a given percentage of hosts in the current batch has failed.");
-
-        addField("module_defaults").setType(YamlTypes.STRING)
-                .setDescription("Specifies default parameter values for modules.");
-
-        addField("name").setType(YamlTypes.STRING)
-                .setDescription("Identifier. Can be used for documentation, in or tasks/handlers.");
-
-        addField("no_log").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that controls information disclosure.");
 
         addField("order").setType(YamlTypes.STRING)
                 .setDescription("Controls the sorting of hosts as they are used for executing the play. Possible values are inventory (default), sorted, reverse_sorted, reverse_inventory and shuffle.");
 
-        addField("port").setType(YamlTypes.INTEGER)
-                .setDescription("Used to override the default port used in a connection.");
-
         addField("post_tasks").setType(YamlTypes.ANY)
                 .setDescription("A list of tasks to execute after the tasks section.");
+
+        addField("tasks").setType(YamlTypes.ANY)
+                .setDescription("Main list of tasks to execute in the play, they run after roles and before post_tasks.");
 
         addField("pre_tasks").setType(YamlTypes.ANY)
                 .setDescription("A list of tasks to execute before roles.");
 
-        addField("remote_user").setType(YamlTypes.STRING)
-                .setDescription("User used to log into the target via the connection plugin.");
-
         addField("roles").setType(YamlTypes.ANY)
                 .setDescription("List of roles to be imported into the play");
-
-        addField("run_once").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that will bypass the host loop, forcing the task to attempt to execute on the first host available and afterwards apply any results and facts to all active hosts in the same batch.");
 
         addField("serial").setType(YamlTypes.INTEGER)
                 .setDescription("Explicitly define how Ansible batches the execution of the current play on the play's target");
 
         addField("strategy").setType(YamlTypes.STRING)
                 .setDescription("Allows you to choose the connection plugin to use for the play.");
-
-        addField("tags")
-                .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING)
-                .setDescription("Tags applied to the task or included tasks, this allows selecting subsets of tasks from the command line.");
-
-        addField("tasks").setType(YamlTypes.ANY)
-                .setDescription("Main list of tasks to execute in the play, they run after roles and before post_tasks.");
-
-        addField("throttle").setType(YamlTypes.INTEGER)
-                .setDescription("Limit number of concurrent task runs on task, block and playbook level. This is independent of the forks and serial settings, but cannot be set higher than those limits. For example, if forks is set to 10 and the throttle is set to 15, at most 10 hosts will be operated on in parallel.");
-
-        addField("vars").setType(YamlTypes.ANY)
-                .setDescription("Dictionary/map of variables.");
 
         addField("vars_files")
                 .setType(YamlTypes.STRING)
