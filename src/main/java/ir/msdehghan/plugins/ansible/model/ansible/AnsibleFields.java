@@ -26,7 +26,7 @@ public final class AnsibleFields {
         YamlField tags = YamlField.create("tags")
                 .setType(YamlTypes.STRING) //TODO: add always and never
                 .setType(Sequence, YamlTypes.STRING)
-                .setDescription("Conditional expression, determines if an iteration of a task is run or not.");
+                .setDescription("Tags applied to the task or included tasks, this allows selecting subsets of tasks from the command line.");
         return new YamlField[] { tags };
     }
 

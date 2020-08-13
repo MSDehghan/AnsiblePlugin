@@ -1,6 +1,6 @@
 package ir.msdehghan.plugins.ansible;
 
-import ir.msdehghan.plugins.ansible.model.ansible.AnsiblePlay;
+import ir.msdehghan.plugins.ansible.model.ansible.play.AnsiblePlay;
 import ir.msdehghan.plugins.ansible.model.yml.YamlField;
 
 import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.Sequence;

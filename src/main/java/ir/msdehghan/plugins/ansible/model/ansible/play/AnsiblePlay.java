@@ -1,10 +1,10 @@
-package ir.msdehghan.plugins.ansible.model.ansible;
+package ir.msdehghan.plugins.ansible.model.ansible.play;
 
+import ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields;
 import ir.msdehghan.plugins.ansible.model.ansible.play.VarsPrompt;
+import ir.msdehghan.plugins.ansible.model.ansible.task.AnsibleTask;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
-
-import java.util.Arrays;
 
 import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.*;
 
@@ -32,7 +32,7 @@ public class AnsiblePlay extends YamlMappingType {
         addField("gather_timeout").setType(YamlTypes.INTEGER)
                 .setDescription("Allows you to set the timeout for the fact gathering plugin controlled by gather_facts.");
 
-        addField("handlers").setType(YamlTypes.STRING)
+        addField("handlers").setType(Sequence, AnsibleTask.TYPE, true) // TODO: add handler type
                 .setDescription("A section with tasks that are treated as handlers, these won't get executed normally, only when notified after each section of tasks is complete. A handler's listen field is not templatable.");
 
         addField("hosts").setRequired()
@@ -46,13 +46,13 @@ public class AnsiblePlay extends YamlMappingType {
         addField("order").setType(YamlTypes.STRING)
                 .setDescription("Controls the sorting of hosts as they are used for executing the play. Possible values are inventory (default), sorted, reverse_sorted, reverse_inventory and shuffle.");
 
-        addField("post_tasks").setType(YamlTypes.ANY)
+        addField("post_tasks").setType(Sequence, AnsibleTask.TYPE, true)
                 .setDescription("A list of tasks to execute after the tasks section.");
 
-        addField("tasks").setType(YamlTypes.ANY)
+        addField("tasks").setType(Sequence, AnsibleTask.TYPE, true)
                 .setDescription("Main list of tasks to execute in the play, they run after roles and before post_tasks.");
 
-        addField("pre_tasks").setType(YamlTypes.ANY)
+        addField("pre_tasks").setType(Sequence, AnsibleTask.TYPE, true)
                 .setDescription("A list of tasks to execute before roles.");
 
         addField("roles").setType(YamlTypes.ANY)
