@@ -1,6 +1,8 @@
 package ir.msdehghan.plugins.ansible.model.yml.type;
 
-import ir.msdehghan.plugins.ansible.model.yml.YamlField;
+import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class YamlMappingType extends YamlType {
+public abstract class YamlMappingType extends YamlType implements MappingType {
     private final List<YamlField> fields;
     private final List<YamlField> readOnlyFields;
 
@@ -22,10 +24,12 @@ public abstract class YamlMappingType extends YamlType {
         this(name, 1);
     }
 
+    @Override
     public List<YamlField> getFields() {
         return readOnlyFields;
     }
 
+    @Override
     public Optional<YamlField> getFieldByName(String name) {
         return fields.stream().filter(field -> field.getName().equals(name)).findAny();
     }
@@ -35,7 +39,7 @@ public abstract class YamlMappingType extends YamlType {
         return field;
     }
 
-    protected YamlField addField(@NotNull String field) {
-        return addField(YamlField.create(field));
+    protected DefaultYamlField addField(@NotNull String field) {
+        return addField(DefaultYamlField.create(field));
     }
 }

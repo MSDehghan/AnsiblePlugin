@@ -1,12 +1,11 @@
 package ir.msdehghan.plugins.ansible.model.ansible.play;
 
 import ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields;
-import ir.msdehghan.plugins.ansible.model.ansible.play.VarsPrompt;
 import ir.msdehghan.plugins.ansible.model.ansible.task.AnsibleTask;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
 
-import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.*;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.*;
 
 public class AnsiblePlay extends YamlMappingType {
     public AnsiblePlay() {

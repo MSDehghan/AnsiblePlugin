@@ -3,9 +3,10 @@ package ir.msdehghan.plugins.ansible.model.yml;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ObjectUtils;
-import ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation;
-import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
@@ -28,20 +29,20 @@ public class YamlModelProcessor {
 
         PsiElement parent = PsiTreeUtil.getParentOfType(value, YAMLKeyValue.class, YAMLSequenceItem.class, YAMLDocument.class);
         if (parent instanceof YAMLDocument) {
-            return ElementSchemaInfo.createOrNull(rootField, Relation.Mapping);
+            return ElementSchemaInfo.createOrNull(rootField, YamlField.Relation.Mapping);
         } else if (parent instanceof YAMLSequenceItem) {
-            return ElementSchemaInfo.createOrNull(locate(parent.getParent()).getField(), Relation.Sequence);
+            return ElementSchemaInfo.createOrNull(locate(parent.getParent()).getField(), YamlField.Relation.Sequence);
         } else if (parent instanceof YAMLKeyValue) {
             YAMLKeyValue keyValue = (YAMLKeyValue) parent;
             ElementSchemaInfo parentField = locate(keyValue.getParent());
-            YamlMappingType parentType = ObjectUtils.tryCast(parentField.getType(), YamlMappingType.class);
+            MappingType parentType = ObjectUtils.tryCast(parentField.getType(), MappingType.class);
 
             if (parentType == null) return null;
             YamlField field = parentType.getFieldByName(keyValue.getKeyText()).orElse(null);
 
-            Relation relation = Relation.Mapping;
-            if (value instanceof YAMLSequence) relation = Relation.Sequence;
-            else if (value instanceof YAMLScalar && isValue((YAMLScalar) value)) relation = Relation.Scalar;
+            Relation relation = YamlField.Relation.Mapping;
+            if (value instanceof YAMLSequence) relation = YamlField.Relation.Sequence;
+            else if (value instanceof YAMLScalar && isValue((YAMLScalar) value)) relation = YamlField.Relation.Scalar;
 
             return ElementSchemaInfo.createOrNull(field, relation);
         }

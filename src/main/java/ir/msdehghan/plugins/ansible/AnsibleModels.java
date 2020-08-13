@@ -1,11 +1,12 @@
 package ir.msdehghan.plugins.ansible;
 
 import ir.msdehghan.plugins.ansible.model.ansible.play.AnsiblePlay;
-import ir.msdehghan.plugins.ansible.model.yml.YamlField;
+import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 
-import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.Sequence;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
 
 public class AnsibleModels {
     public static final AnsiblePlay PLAY = new AnsiblePlay();
-    public static final YamlField ROOT_PLAY_FIELD = YamlField.create("<Play Root>").setType(Sequence, PLAY, true);
+    public static final YamlField ROOT_PLAY_FIELD = DefaultYamlField.create("<Play Root>").setType(Sequence, PLAY, true);
 }

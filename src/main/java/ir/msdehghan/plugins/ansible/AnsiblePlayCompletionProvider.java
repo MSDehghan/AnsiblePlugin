@@ -5,12 +5,12 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
-import ir.msdehghan.plugins.ansible.model.yml.YamlField;
 import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor;
 import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor.ElementSchemaInfo;
-import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.ValueProvider;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.psi.YAMLMapping;
 
@@ -34,9 +34,9 @@ public class AnsiblePlayCompletionProvider extends CompletionProvider<Completion
         if (type instanceof ValueProvider) {
             result.addAllElements(((ValueProvider) type).getValueLookups());
         }
-        if (type instanceof YamlMappingType) {
+        if (type instanceof MappingType) {
             Set<String> siblings = getMappingSiblings(element);
-            ((YamlMappingType) type).getFields().stream().unordered()
+            ((MappingType) type).getFields().stream().unordered()
                     .filter(f -> !siblings.contains(f.getName()))
                     .map(YamlField::getLookupElement)
                     .forEach(result::addElement);

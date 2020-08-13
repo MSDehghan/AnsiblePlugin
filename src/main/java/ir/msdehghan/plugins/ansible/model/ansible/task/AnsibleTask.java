@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.Mapping;
-import static ir.msdehghan.plugins.ansible.model.yml.YamlField.Relation.Sequence;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Mapping;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
 
 public class AnsibleTask extends YamlMappingType {
     public static final AnsibleTask TYPE = new AnsibleTask();
