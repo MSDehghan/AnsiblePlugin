@@ -1,15 +1,13 @@
 package ir.msdehghan.plugins.ansible.model.yml.type.api;
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupElement;
 import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 
 public interface YamlField {
-    LookupElementBuilder getLookupElement();
+    LookupElement getLookupElement();
 
     String getName();
-
-    YamlType getDefaultType();
 
     YamlType getType(DefaultYamlField.Relation relation);
 

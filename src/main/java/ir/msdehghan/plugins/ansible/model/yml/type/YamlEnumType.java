@@ -11,13 +11,23 @@ import java.util.stream.Collectors;
 public class YamlEnumType extends YamlType implements ValueProvider {
     private String[] options = ArrayUtil.EMPTY_STRING_ARRAY;
 
-    public YamlEnumType(String name) {
+    public YamlEnumType(String name)
+    {
         super(name);
+    }
+
+    public YamlEnumType()
+    {
+        super("Enum");
     }
 
     public YamlEnumType setOptions(String... options) {
         this.options = options;
         return this;
+    }
+
+    public static YamlEnumType of(String... options) {
+        return new YamlEnumType().setOptions(options);
     }
 
     @Override

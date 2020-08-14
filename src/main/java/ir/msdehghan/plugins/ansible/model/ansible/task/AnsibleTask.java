@@ -86,13 +86,11 @@ public class AnsibleTask extends YamlMappingType {
     }
 
     private void loadPluginNames() {
-        try {
-
-            InputStream pluginsInputStream = AnsibleTask.class.getResourceAsStream("/plugins_list.txt");
+        try (InputStream pluginsInputStream = AnsibleTask.class.getResourceAsStream("/plugins_list.txt")) {
             BufferedReader pluginsReader = new BufferedReader(new InputStreamReader(pluginsInputStream));
             String name;
             while ((name = pluginsReader.readLine()) != null) {
-                addField(name).setType(YamlTypes.ANY);
+                addField(new AnsibleModuleField(name));
             }
         } catch (IOException e) {
             throw new IllegalStateException("Can't read ansible module names.", e);

@@ -1,5 +1,7 @@
 package ir.msdehghan.plugins.ansible.model.yml;
 
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.documentation.DocumentationMarkup;
@@ -8,6 +10,8 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 
 import java.util.EnumMap;
 import java.util.stream.Collectors;
+
+import static ir.msdehghan.plugins.ansible.AnsibleUtil.getIcon;
 
 public class DefaultYamlField implements YamlField {
     private String name;
@@ -26,7 +30,7 @@ public class DefaultYamlField implements YamlField {
     }
 
     @Override
-    public LookupElementBuilder getLookupElement() {
+    public LookupElement getLookupElement() {
         String type;
         if (valueTypeMap.size() == 1) {
             type = getDefaultType().getName();
@@ -34,8 +38,16 @@ public class DefaultYamlField implements YamlField {
             type = valueTypeMap.entrySet().stream().map(e -> e.getValue().getName() + "(" + e.getKey().name() + ")")
                     .collect(Collectors.joining("/"));
         }
-        return LookupElementBuilder.create(this, name).withIcon(AllIcons.Json.Object).withBoldness(required)
-                .withStrikeoutness(deprecated).withTypeText(type, true);
+        LookupElementBuilder lookupElement = LookupElementBuilder.create(this, name)
+                .withIcon(getIcon(defaultValueRelation))
+                .withBoldness(required)
+                .withStrikeoutness(deprecated)
+                .withTypeText(type, true);
+
+        if (required) {
+            return PrioritizedLookupElement.withPriority(lookupElement, 3);
+        }
+        return lookupElement;
     }
 
     @Override
@@ -75,7 +87,6 @@ public class DefaultYamlField implements YamlField {
         return this;
     }
 
-    @Override
     public YamlType getDefaultType() {
         return valueTypeMap.get(defaultValueRelation);
     }

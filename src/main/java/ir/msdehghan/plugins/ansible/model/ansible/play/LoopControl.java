@@ -19,7 +19,7 @@ public class LoopControl extends YamlMappingType {
                 .setType(STRING);
 
         addField("pause")
-                .setType(INTEGER) // TODO: float
+                .setType(FLOAT)
                 .setDescription("Default: 0");
 
         addField("extended")

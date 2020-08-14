@@ -1,9 +1,14 @@
 package ir.msdehghan.plugins.ansible;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
+
+import javax.swing.*;
 
 public class AnsibleUtil {
     private AnsibleUtil() {
@@ -41,5 +46,18 @@ public class AnsibleUtil {
         if (beforeSibling == null || beforeSibling.getNode().getElementType() != YAMLTokenTypes.COLON) return false;
         beforeSibling = PsiTreeUtil.skipWhitespacesBackward(beforeSibling);
         return beforeSibling != null && beforeSibling.getNode().getElementType() == YAMLTokenTypes.SCALAR_KEY;
+    }
+
+    public static void appendSection(String title, String doc, StringBuilder sb) {
+        if (doc == null || doc.isEmpty()) return;
+        sb.append(DocumentationMarkup.SECTION_HEADER_START)
+                .append(title)
+                .append(DocumentationMarkup.SECTION_SEPARATOR)
+                .append(doc)
+                .append(DocumentationMarkup.SECTION_END);
+    }
+
+    public static Icon getIcon(YamlField.Relation relation) {
+        return relation == YamlField.Relation.Sequence ? AllIcons.Json.Array : AllIcons.Json.Object;
     }
 }

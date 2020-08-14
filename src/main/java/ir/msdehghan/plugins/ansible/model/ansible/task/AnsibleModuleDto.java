@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AnsibleModuleDto {
+class AnsibleModuleDto {
     public String name;
     public String category;
     public Set<String> returnFields;
@@ -16,13 +16,13 @@ public class AnsibleModuleDto {
     public String notes;
     public Map<String, Field> fields;
 
-    public static class Deprecated {
+    static class Deprecated {
         public String alternative;
         public String why;
         public String removedIn;
     }
 
-    public static class Field {
+    static class Field {
         public List<String> aliases;
         public List<String> choices;
         public String description;
@@ -31,6 +31,5 @@ public class AnsibleModuleDto {
         public String type;
         public String versionAdded;
         public String defaultValue;
-
     }
 }

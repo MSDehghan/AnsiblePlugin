@@ -7,6 +7,7 @@ public class YamlTypes {
     public static final YamlType STRING = new YamlStringType();
     public static final YamlType BOOLEAN = new YamlEnumType("Boolean").setOptions("true", "false");
     public static final YamlType INTEGER = new YamlIntegerType();
+    public static final YamlType FLOAT = INTEGER; // TODO: replace with NUMBER
 
     private YamlTypes() {
         // This is a utility class.
