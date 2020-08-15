@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
-import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor;
 import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor.ElementSchemaInfo;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
@@ -18,14 +17,15 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
+
 public class AnsiblePlayCompletionProvider extends CompletionProvider<CompletionParameters> {
-    private static final YamlModelProcessor model = new YamlModelProcessor(AnsibleModels.ROOT_PLAY_FIELD);
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         final PsiElement element = parameters.getPosition();
 
-        final ElementSchemaInfo schemaPosition = model.locate(element);
+        final ElementSchemaInfo schemaPosition = PLAY_MODEL_PROCESSOR.locate(element);
 
         if (schemaPosition == null || schemaPosition.getType() == null) return;
         final YamlType type = schemaPosition.getType();
