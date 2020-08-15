@@ -1,12 +1,13 @@
 <idea-plugin>
     <id>ir.msdehghan.plugins.ansible</id>
     <name>Ansible</name>
-    <vendor email="msdn@gmail.com" url="http://msdehghan.ir">msdehghan</vendor>
+    <vendor email="msdehghan77@gmail.com" url="http://msdehghan.ir">MSDehghan</vendor>
 
-    <description><![CDATA[
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae dicta eius et nobis numquam obcaecati
-     quidem quod similique tempore vitae. At blanditiis consectetur deleniti, dolorem doloribus eos esse, perferendis praesentium provident quam, quasi quos reprehenderit repudiandae tenetur unde vel voluptas.
-    ]]></description>
+    <description>
+        Intellij plugin that helps writing ansible playbooks.
+        This plugin can auto-complete all play and task fields.
+        Not only Ansible modules are recognized but also all of them have full documentation, right in ypur IDE.
+    </description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
@@ -17,8 +18,4 @@
         <psi.referenceContributor language="yaml" implementation="ir.msdehghan.plugins.ansible.AnsibleInventoryReferenceContributor" />
         <json.catalog.exclusion implementation="ir.msdehghan.plugins.ansible.JsonSchemaExclude" />
     </extensions>
-
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
 </idea-plugin>
