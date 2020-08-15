@@ -3,7 +3,6 @@ package ir.msdehghan.plugins.ansible.model.yml;
 import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.icons.AllIcons;
 import com.intellij.lang.documentation.DocumentationMarkup;
 import ir.msdehghan.plugins.ansible.AnsibleUtil;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;

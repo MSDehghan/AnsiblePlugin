@@ -14,6 +14,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor language="yaml" implementationClass="ir.msdehghan.plugins.ansible.AnsibleCompletionContributor"/>
         <documentationProvider implementation="ir.msdehghan.plugins.ansible.AnsiblePlayDocProvider" />
+        <psi.referenceContributor language="yaml" implementation="ir.msdehghan.plugins.ansible.AnsibleInventoryReferenceContributor" />
         <json.catalog.exclusion implementation="ir.msdehghan.plugins.ansible.JsonSchemaExclude" />
     </extensions>
 

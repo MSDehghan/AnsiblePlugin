@@ -68,6 +68,7 @@ class AnsibleModuleType extends YamlType implements MappingType {
 
     @Override
     public Optional<YamlField> getFieldByName(String name) {
+        ensureLoaded();
         return fields.stream().filter(field -> field.getName().equals(name)).findAny();
     }
 }

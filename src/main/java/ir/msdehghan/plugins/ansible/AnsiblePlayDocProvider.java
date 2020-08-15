@@ -15,7 +15,7 @@ public class AnsiblePlayDocProvider implements DocumentationProvider {
         if (element instanceof DocPsi) {
             return ((DocPsi) element).field.generateDoc();
         } else if(element instanceof YAMLKeyValue) {
-            if (!AnsibleUtil.isPlaybookField(originalElement)) return null;
+            if (!AnsibleUtil.isInPlayBook(originalElement)) return null;
             for (YamlField field : AnsibleModels.PLAY.getFields()) {
                 if (field.getName().equals(((YAMLKeyValue) element).getKeyText().trim())) {
                     return field.generateDoc();

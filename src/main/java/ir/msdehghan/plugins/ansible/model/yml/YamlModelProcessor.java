@@ -35,6 +35,7 @@ public class YamlModelProcessor {
         } else if (parent instanceof YAMLKeyValue) {
             YAMLKeyValue keyValue = (YAMLKeyValue) parent;
             ElementSchemaInfo parentField = locate(keyValue.getParent());
+            if (parentField == null) return null;
             MappingType parentType = ObjectUtils.tryCast(parentField.getType(), MappingType.class);
 
             if (parentType == null) return null;
