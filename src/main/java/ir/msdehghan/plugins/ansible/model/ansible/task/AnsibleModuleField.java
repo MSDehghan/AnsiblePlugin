@@ -52,7 +52,7 @@ public class AnsibleModuleField implements YamlField {
         if (moduleDto.shortDescription != null && !moduleDto.shortDescription.isEmpty()) {
             sb.append("<p>").append(moduleDto.shortDescription).append("</p>");
         }
-        sb.append(DocumentationMarkup.CONTENT_END).append(NEW_LINE);
+        sb.append(DocumentationMarkup.CONTENT_END);
 
         if (moduleDto.deprecated != null) {
             sb.append("<hr/>");

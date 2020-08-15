@@ -26,7 +26,6 @@ public class AnsiblePlayCompletionProvider extends CompletionProvider<Completion
         final PsiElement element = parameters.getPosition();
 
         final ElementSchemaInfo schemaPosition = model.locate(element);
-        System.out.println("schemaPosition = " + schemaPosition);
 
         if (schemaPosition == null || schemaPosition.getType() == null) return;
         final YamlType type = schemaPosition.getType();

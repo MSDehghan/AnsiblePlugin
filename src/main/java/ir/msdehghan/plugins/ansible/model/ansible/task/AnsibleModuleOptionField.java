@@ -91,17 +91,14 @@ public class AnsibleModuleOptionField implements YamlField {
     @Override
     public String generateDoc() {
         final String NEW_LINE = "<br/>";
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(DocumentationMarkup.CONTENT_START);
         if (field.description != null && !field.description.isEmpty()) {
-            sb.append(DocumentationMarkup.CONTENT_START)
-                    .append(field.description)
-                    .append(DocumentationMarkup.CONTENT_END)
-                    .append(NEW_LINE);
+            sb.append(field.description).append(NEW_LINE);
         }
-
         if (field.required) {
-            sb.append("<b>Required</b>").append(NEW_LINE);
+            sb.append("<b>Required</b>");
         }
+        sb.append(DocumentationMarkup.CONTENT_END);
 
         sb.append(DocumentationMarkup.SECTIONS_START);
         AnsibleUtil.appendSection("Default", field.defaultValue, sb);
