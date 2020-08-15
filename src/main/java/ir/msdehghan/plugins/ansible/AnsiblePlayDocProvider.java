@@ -4,25 +4,35 @@ import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.light.LightElement;
+import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor;
+import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
+import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLLanguage;
+import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
+
+import java.util.Optional;
+
+import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
 
 public class AnsiblePlayDocProvider implements DocumentationProvider {
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         if (element instanceof DocPsi) {
             return ((DocPsi) element).field.generateDoc();
-        } else if(element instanceof YAMLKeyValue) {
-            if (!AnsibleUtil.isInPlayBook(originalElement)) return null;
-            for (YamlField field : AnsibleModels.PLAY.getFields()) {
-                if (field.getName().equals(((YAMLKeyValue) element).getKeyText().trim())) {
-                    return field.generateDoc();
-                }
+        } else {
+            if (originalElement != null && !originalElement.getNode().getElementType().equals(YAMLTokenTypes.SCALAR_KEY))
+                return null;
+            YamlModelProcessor.ElementSchemaInfo schemaInfo = PLAY_MODEL_PROCESSOR.locate(originalElement);
+            if (schemaInfo == null || schemaInfo.getType() == null ||
+                    !(schemaInfo.getType() instanceof MappingType) || !(element instanceof YAMLKeyValue)) {
+                return null;
             }
+            Optional<YamlField> field = ((MappingType) schemaInfo.getType()).getFieldByName(((YAMLKeyValue) element).getKeyText());
+            return field.map(YamlField::generateDoc).orElse(null);
         }
-        return null;
     }
 
     @Override
