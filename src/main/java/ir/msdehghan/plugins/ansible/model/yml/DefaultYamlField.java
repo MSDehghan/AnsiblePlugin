@@ -5,6 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.documentation.DocumentationMarkup;
+import ir.msdehghan.plugins.ansible.AnsibleUtil;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 
@@ -33,9 +34,9 @@ public class DefaultYamlField implements YamlField {
     public LookupElement getLookupElement() {
         String type;
         if (valueTypeMap.size() == 1) {
-            type = getDefaultType().getName();
+            type = AnsibleUtil.getTypeText(defaultValueRelation, getDefaultType());
         } else {
-            type = valueTypeMap.entrySet().stream().map(e -> e.getValue().getName() + "(" + e.getKey().name() + ")")
+            type = valueTypeMap.entrySet().stream().map(e -> AnsibleUtil.getTypeText(e.getKey(), e.getValue()))
                     .collect(Collectors.joining("/"));
         }
         LookupElementBuilder lookupElement = LookupElementBuilder.create(this, name)

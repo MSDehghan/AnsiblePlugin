@@ -4,7 +4,11 @@ import com.intellij.icons.AllIcons;
 import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
+import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
@@ -48,7 +52,7 @@ public class AnsibleUtil {
         return beforeSibling != null && beforeSibling.getNode().getElementType() == YAMLTokenTypes.SCALAR_KEY;
     }
 
-    public static void appendSection(String title, String doc, StringBuilder sb) {
+    public static void appendSection(@NotNull String title, @Nullable String doc, @NotNull StringBuilder sb) {
         if (doc == null || doc.isEmpty()) return;
         sb.append(DocumentationMarkup.SECTION_HEADER_START)
                 .append(title)
@@ -57,7 +61,15 @@ public class AnsibleUtil {
                 .append(DocumentationMarkup.SECTION_END);
     }
 
-    public static Icon getIcon(YamlField.Relation relation) {
+    public static Icon getIcon(@NotNull YamlField.Relation relation) {
         return relation == YamlField.Relation.Sequence ? AllIcons.Json.Array : AllIcons.Json.Object;
+    }
+
+    public static String getTypeText(@NotNull YamlField.Relation relation, @NotNull YamlType type) {
+        if (relation == YamlField.Relation.Scalar) {
+            return type.getName();
+        } else {
+            return type == YamlTypes.ANY ? relation.name() : relation.name() + '[' + type.getName() + ']';
+        }
     }
 }

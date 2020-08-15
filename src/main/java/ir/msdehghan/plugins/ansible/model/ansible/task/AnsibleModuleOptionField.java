@@ -71,7 +71,7 @@ public class AnsibleModuleOptionField implements YamlField {
         LookupElementBuilder lookupElement = LookupElementBuilder.create(this, name)
                 .withIcon(AnsibleUtil.getIcon(relation))
                 .withBoldness(field.required)
-                .withTypeText(relation == Relation.Scalar ? type.getName() : relation.name());
+                .withTypeText(AnsibleUtil.getTypeText(relation, type));
         if (field.required) {
             return PrioritizedLookupElement.withPriority(lookupElement, 3);
         }
