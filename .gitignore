@@ -65,4 +65,4 @@ gradle-app.setting
 **/build/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,java,intellij,gradle
-playbook.yml
+src/ansible

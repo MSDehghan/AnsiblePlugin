@@ -1,10 +1,11 @@
 plugins {
     java
+    id("org.sonarqube") version "3.0"
     id("org.jetbrains.intellij") version "0.4.21"
 }
 
 group = "ir.msdehghan"
-version = "1.0-SNAPSHOT"
+version = "0.1"
 
 repositories {
     mavenCentral()
@@ -22,6 +23,14 @@ java {
 intellij {
     version = "2020.1.4"
     setPlugins("yaml")
+}
+
+sonarqube {
+    properties {
+        properties["sonar.projectKey"] = "MSDehghan_IntelliJ-Ansible"
+        properties["sonar.organization"] = "msdehghan-github"
+        properties["sonar.host.url"] = "https://sonarcloud.io"
+    }
 }
 
 tasks.buildSearchableOptions {

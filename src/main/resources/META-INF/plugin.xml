@@ -1,12 +1,14 @@
 <idea-plugin>
     <id>ir.msdehghan.plugins.ansible</id>
     <name>Ansible</name>
-    <vendor email="msdehghan77@gmail.com" url="http://msdehghan.ir">MSDehghan</vendor>
+    <vendor>MSDehghan</vendor>
 
     <description>
-        Intellij plugin that helps writing ansible playbooks.
-        This plugin can auto-complete all play and task fields.
-        Not only Ansible modules are recognized but also all of them have full documentation, right in ypur IDE.
+        <![CDATA[
+        Helps writing and working with ansible playbooks. <br/>
+        This plugin can auto-complete all play and task fields. <br/>
+        Not only Ansible modules are recognized but also all of them have full documentation, right in your IDE.
+        ]]>
     </description>
 
     <depends>com.intellij.modules.platform</depends>

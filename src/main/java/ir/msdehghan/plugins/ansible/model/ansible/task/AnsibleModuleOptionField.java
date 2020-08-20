@@ -26,9 +26,10 @@ public class AnsibleModuleOptionField implements YamlField {
     }
 
     private YamlType computeType() {
-        if (field.type == null) return YamlTypes.ANY;
         if (field.choices != null && !field.choices.isEmpty()) {
             return YamlEnumType.of(field.choices.toArray(new String[0]));
+        } else if (field.type == null) {
+            return YamlTypes.ANY;
         } else if (field.type.equals("list") && field.elements != null) {
             return getTypeFor(field.elements);
         }

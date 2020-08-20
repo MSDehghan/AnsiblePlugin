@@ -1,11 +1,10 @@
 package ir.msdehghan.plugins.ansible;
 
-import com.intellij.lang.documentation.DocumentationProvider;
+import com.intellij.lang.documentation.DocumentationProviderEx;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.light.LightElement;
 import ir.msdehghan.plugins.ansible.model.yml.YamlModelProcessor;
-import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +16,7 @@ import java.util.Optional;
 
 import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
 
-public class AnsiblePlayDocProvider implements DocumentationProvider {
+public class AnsiblePlayDocProvider extends DocumentationProviderEx {
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         if (element instanceof DocPsi) {
