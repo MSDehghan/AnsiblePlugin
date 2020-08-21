@@ -66,3 +66,6 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,java,intellij,gradle
 src/ansible
+src/main/resources/docs
+src/main/resources/plugins_list.txt
+plugin-doc-extractor/src/main/resources/plugins.json
