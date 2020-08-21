@@ -27,7 +27,7 @@ intellij {
 
 sonarqube {
     properties {
-        properties["sonar.projectKey"] = "MSDehghan_IntelliJ-Ansible"
+        properties["sonar.projectKey"] = "MSDehghan_AnsiblePlugin"
         properties["sonar.organization"] = "msdehghan-github"
         properties["sonar.host.url"] = "https://sonarcloud.io"
     }
