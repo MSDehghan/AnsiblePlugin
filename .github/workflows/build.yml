@@ -40,4 +40,4 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Stop Gradle daemon
-        run: ./gradlew --stop
+      run: ./gradlew --stop
