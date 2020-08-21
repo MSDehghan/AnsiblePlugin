@@ -1,3 +1,3 @@
 rootProject.name = "AnsiblePlugin"
 
-include(":plugin-doc-extractor")
+//include(":plugin-doc-extractor")
