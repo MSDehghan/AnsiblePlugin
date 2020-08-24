@@ -3,13 +3,11 @@ package ir.msdehghan.plugins.ansible;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
 import javax.swing.*;

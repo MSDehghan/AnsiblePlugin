@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "ir.msdehghan"
-version = "0.1"
+version = "0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -23,6 +23,7 @@ java {
 intellij {
     version = "2020.1.4"
     setPlugins("yaml")
+    updateSinceUntilBuild = false
 }
 
 sonarqube {

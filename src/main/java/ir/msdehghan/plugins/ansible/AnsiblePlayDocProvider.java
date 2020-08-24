@@ -1,6 +1,6 @@
 package ir.msdehghan.plugins.ansible;
 
-import com.intellij.lang.documentation.DocumentationProviderEx;
+import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.light.LightElement;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
 
-public class AnsiblePlayDocProvider extends DocumentationProviderEx {
+public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         if (element instanceof DocPsi) {

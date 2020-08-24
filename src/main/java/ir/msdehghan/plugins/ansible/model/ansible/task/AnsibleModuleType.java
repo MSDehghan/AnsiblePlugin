@@ -2,7 +2,6 @@ package ir.msdehghan.plugins.ansible.model.ansible.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;

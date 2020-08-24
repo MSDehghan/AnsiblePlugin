@@ -20,10 +20,6 @@ public abstract class YamlMappingType extends YamlType implements MappingType {
         readOnlyFields = Collections.unmodifiableList(fields);
     }
 
-    public YamlMappingType(String name) {
-        this(name, 1);
-    }
-
     @Override
     public List<YamlField> getFields() {
         return readOnlyFields;

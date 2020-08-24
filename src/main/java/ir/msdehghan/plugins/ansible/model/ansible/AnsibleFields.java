@@ -11,9 +11,9 @@ import java.util.List;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
 
 public final class AnsibleFields {
-    public static List<YamlField> TAGGABLE = Arrays.asList(getTaggableFields());
-    public static List<YamlField> CONDITIONAL = Arrays.asList(getConditionalFields());
-    public static List<YamlField> BASE = Arrays.asList(getBaseFields());
+    public static final List<YamlField> TAGGABLE = Arrays.asList(getTaggableFields());
+    public static final List<YamlField> CONDITIONAL = Arrays.asList(getConditionalFields());
+    public static final List<YamlField> BASE = Arrays.asList(getBaseFields());
 
     private static YamlField[] getConditionalFields() {
         YamlField when = DefaultYamlField.create("when")
