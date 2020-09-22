@@ -10,6 +10,7 @@ Plugin that helps develop ansible files.
 * Access to all ansible docs locally
 
 ## Features in progress
+* Autocompletion in Ansible roles
 * Suggest defined variables
 * Go to variable
 * Go to play
