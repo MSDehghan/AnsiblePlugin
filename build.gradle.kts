@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "ir.msdehghan"
-version = "0.1-SNAPSHOT"
+version = "0.11"
 
 repositories {
     mavenCentral()

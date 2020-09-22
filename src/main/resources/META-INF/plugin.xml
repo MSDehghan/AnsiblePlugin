@@ -5,7 +5,6 @@
 
     <description>
         <![CDATA[
-        <h2>Features</h2>
         <p>
         Helps writing and working with ansible playbooks. <br/>
         This plugin can auto-complete all play and task fields. <br/>
@@ -45,7 +44,7 @@
         ]]>
     </change-notes>
 
-    <idea-version since-build="181" />
+    <idea-version since-build="182" />
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
 
