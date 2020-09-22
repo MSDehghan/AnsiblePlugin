@@ -5,11 +5,45 @@
 
     <description>
         <![CDATA[
+        <h2>Features</h2>
+        <p>
         Helps writing and working with ansible playbooks. <br/>
         This plugin can auto-complete all play and task fields. <br/>
         Not only Ansible modules are recognized but also all of them have full documentation, right in your IDE.
-        ]]>
+        </p>
+        <br/>
+        <p>
+        Note that currently playbooks are supported and Ansible roles are not supported yet but we are actively developing new features and
+        roles support will be added soon.
+        <br/>
+        <br/>
+        To report bugs and feature requests you can create Github issues. For code contribution you can create pull requests.<br/>
+        Any type of contribution is <b>highly</b> appreciated. <br/>
+        <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub link</a>
+        <br/>
+        <h3>Features in progress:</h3>
+        <ul>
+            <li>Autocompletion in Ansible roles</li>
+            <li>Suggest inventory variables</li>
+            <li>Go to variable</li>
+            <li>Go to play</li>
+        </ul>
+        </p>
+    ]]>
     </description>
+
+    <change-notes>
+        <![CDATA[
+        <h2>0.11</h2>
+        <ul>
+          <li>Add ansible playbooks file icon</li>
+        </ul>
+        <h2>0.1</h2>
+        <ul>
+          <li>Initial release of plugin</li>
+        </ul>
+        ]]>
+    </change-notes>
 
     <idea-version since-build="181" />
     <depends>com.intellij.modules.platform</depends>
@@ -18,6 +52,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor language="yaml" implementationClass="ir.msdehghan.plugins.ansible.AnsibleCompletionContributor"/>
         <documentationProvider implementation="ir.msdehghan.plugins.ansible.AnsiblePlayDocProvider" />
+        <fileIconProvider implementation="ir.msdehghan.plugins.ansible.icon.AnsibleFileIconProvider" />
         <json.catalog.exclusion implementation="ir.msdehghan.plugins.ansible.JsonSchemaExclude" />
     </extensions>
 </idea-plugin>
