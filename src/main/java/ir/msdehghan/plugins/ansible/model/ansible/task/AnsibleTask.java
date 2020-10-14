@@ -82,6 +82,10 @@ public class AnsibleTask extends YamlMappingType {
                 .setType(YamlTypes.INTEGER)
                 .setDescription("Default: 3");
 
+        addField("block")
+                .setType(AnsibleTask.TYPE)
+                .setDescription("block of tasks. can be used with 'rescue' and 'always' fields.");
+
         loadPluginNames();
     }
 

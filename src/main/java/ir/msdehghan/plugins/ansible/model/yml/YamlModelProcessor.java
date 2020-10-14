@@ -7,6 +7,7 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
@@ -17,7 +18,7 @@ public class YamlModelProcessor {
         this.rootField = rootField;
     }
 
-    public ElementSchemaInfo locate(PsiElement element) {
+    public ElementSchemaInfo locate(@NotNull PsiElement element) {
         YAMLValue value;
         if (element instanceof YAMLValue) {
             value = (YAMLValue) element;
@@ -31,7 +32,9 @@ public class YamlModelProcessor {
         if (parent instanceof YAMLDocument) {
             return ElementSchemaInfo.createOrNull(rootField, YamlField.Relation.Mapping);
         } else if (parent instanceof YAMLSequenceItem) {
-            return ElementSchemaInfo.createOrNull(locate(parent.getParent()).getField(), YamlField.Relation.Sequence);
+            ElementSchemaInfo seqParent = locate(parent.getParent());
+            if (seqParent == null) return null;
+            return ElementSchemaInfo.createOrNull(seqParent.getField(), YamlField.Relation.Sequence);
         } else if (parent instanceof YAMLKeyValue) {
             YAMLKeyValue keyValue = (YAMLKeyValue) parent;
             ElementSchemaInfo parentField = locate(keyValue.getParent());
