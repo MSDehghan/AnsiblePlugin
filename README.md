@@ -1,6 +1,8 @@
 # IntelliJ Ansible Plugin
 ![Build](https://github.com/MSDehghan/AnsiblePlugin/workflows/Build/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MSDehghan_AnsiblePlugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=MSDehghan_AnsiblePlugin)
+[![Version](https://img.shields.io/jetbrains/plugin/v/ir.msdehghan.plugins.ansible.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/ir.msdehghan.plugins.ansible.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
 
 Plugin that helps develop ansible files.
 
