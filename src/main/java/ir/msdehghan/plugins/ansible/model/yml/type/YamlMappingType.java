@@ -14,7 +14,7 @@ public abstract class YamlMappingType extends YamlType implements MappingType {
     private final List<YamlField> fields;
     private final List<YamlField> readOnlyFields;
 
-    public YamlMappingType(String name, int initialSize) {
+    protected YamlMappingType(String name, int initialSize) {
         super(name);
         fields = new ArrayList<>(initialSize);
         readOnlyFields = Collections.unmodifiableList(fields);
