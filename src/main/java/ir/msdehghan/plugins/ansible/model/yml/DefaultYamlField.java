@@ -7,21 +7,23 @@ import com.intellij.lang.documentation.DocumentationMarkup;
 import ir.msdehghan.plugins.ansible.AnsibleUtil;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
 import java.util.stream.Collectors;
 
 import static ir.msdehghan.plugins.ansible.AnsibleUtil.getIcon;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Scalar;
 
 public class DefaultYamlField implements YamlField {
     private String name;
     private boolean required = false;
     private boolean deprecated = false;
     private String description = null;
-    private Relation defaultValueRelation = Relation.Scalar;
+    private Relation defaultValueRelation = null;
     private final EnumMap<Relation, YamlType> valueTypeMap = new EnumMap<>(Relation.class);
 
-    public DefaultYamlField(String name) {
+    public DefaultYamlField(@NotNull String name) {
         this.name = name;
     }
 
@@ -87,26 +89,28 @@ public class DefaultYamlField implements YamlField {
         return this;
     }
 
+    @NotNull
     public YamlType getDefaultType() {
         return valueTypeMap.get(defaultValueRelation);
     }
 
-    public DefaultYamlField setType(YamlType type) {
-        valueTypeMap.put(defaultValueRelation, type);
-        return this;
+    /**
+     * Creates a Scalar relation with given type
+     * @param type type of field
+     * @return created field
+     */
+    public DefaultYamlField setType(@NotNull YamlType type) {
+        return setType(Scalar, type);
     }
 
-    public DefaultYamlField setType(Relation relation, YamlType type) {
-        return setType(relation, type, false);
-    }
-
-    public DefaultYamlField setType(Relation relation, YamlType type, boolean setAsDefault) {
-        if (setAsDefault) defaultValueRelation = relation;
+    public DefaultYamlField setType(@NotNull Relation relation,@NotNull YamlType type) {
+        if (defaultValueRelation == null) defaultValueRelation = relation;
         valueTypeMap.put(relation, type);
         return this;
     }
 
     @Override
+    @NotNull
     public YamlType getType(Relation relation) {
         return valueTypeMap.get(relation);
     }

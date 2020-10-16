@@ -18,11 +18,11 @@ public class YamlModelProcessor {
         this.rootField = rootField;
     }
 
-    public ElementSchemaInfo locate(@NotNull PsiElement element) {
+    public ElementSchemaInfo locate(PsiElement element) {
         YAMLValue value;
         if (element instanceof YAMLValue) {
             value = (YAMLValue) element;
-        } else if (element.getContainingFile() instanceof YAMLFile) {
+        } else if (element != null && element.getContainingFile() instanceof YAMLFile) {
             value = PsiTreeUtil.getParentOfType(element, YAMLValue.class, false);
         } else {
             return null;

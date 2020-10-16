@@ -10,21 +10,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Mapping;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
 
 public class AnsibleTask extends YamlMappingType {
     public static final AnsibleTask TYPE = new AnsibleTask();
+    private static final int FIELDS_SIZE = 20;
 
     private AnsibleTask() {
-        super("play:task", 10);
+        super("Task", FIELDS_SIZE + BASE.size() + CONDITIONAL.size() + TAGGABLE.size());
 
-        AnsibleFields.BASE.forEach(this::addField);
-        AnsibleFields.CONDITIONAL.forEach(this::addField);
-        AnsibleFields.TAGGABLE.forEach(this::addField);
+        BASE.forEach(this::addField);
+        CONDITIONAL.forEach(this::addField);
+        TAGGABLE.forEach(this::addField);
 
         addField("args")
-                .setType(Mapping, YamlTypes.ANY, true)
+                .setType(Mapping, YamlTypes.ANY)
                 .setDescription("A secondary way to add arguments into a task. Takes a dictionary in which keys map to options and values.");
 
         addField("action")
@@ -58,11 +60,11 @@ public class AnsibleTask extends YamlMappingType {
                 .setDescription("");
 
         addField("loop")
-                .setType(Sequence, YamlTypes.ANY, true)
+                .setType(Sequence, YamlTypes.ANY)
                 .setDescription("");
 
         addField("loop_control")
-                .setType(Mapping, new LoopControl(), true)
+                .setType(Mapping, new LoopControl())
                 .setDescription("");
 
         addField("notify")
@@ -83,8 +85,20 @@ public class AnsibleTask extends YamlMappingType {
                 .setDescription("Default: 3");
 
         addField("block")
-                .setType(AnsibleTask.TYPE)
-                .setDescription("block of tasks. can be used with 'rescue' and 'always' fields.");
+                .setType(Sequence, this)
+                .setDescription("Blocks create logical groups of tasks. Blocks also offer ways to handle task errors," +
+                        " similar to exception handling in many programming languages. See 'rescue' and 'always' fields.");
+
+        addField("rescue")
+                .setType(Sequence, this)
+                .setDescription("Rescue blocks specify tasks to run when an earlier task in a block fails. " +
+                        "This approach is similar to exception handling in many programming languages. " +
+                        "Ansible only runs rescue blocks after a task returns a ‘failed’ state. " +
+                        "Bad task definitions and unreachable hosts will not trigger the rescue block.");
+
+        addField("always")
+                .setType(Sequence, this)
+                .setDescription("Tasks in the always section run no matter what the task status of the previous block is.");
 
         loadPluginNames();
     }
