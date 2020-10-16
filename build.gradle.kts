@@ -1,7 +1,7 @@
 plugins {
     java
     id("org.sonarqube") version "3.0"
-    id("org.jetbrains.intellij") version "0.4.21"
+    id("org.jetbrains.intellij") version "0.5.0"
 }
 
 group = "ir.msdehghan"
