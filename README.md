@@ -18,6 +18,6 @@ Plugin that helps develop ansible files.
 * Go to play
 
 ## Contribution
-To report bugs and feature requests you can create Github issue. For code contribution you can create pull requests.
+To report bugs and feature requests you can create a Github issue. For code contribution you can create pull requests.
 
-Any type of contribution is **highly** apprecated.
+Any type of contribution is **highly** appreciated.
