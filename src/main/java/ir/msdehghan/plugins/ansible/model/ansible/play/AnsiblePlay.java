@@ -25,19 +25,19 @@ public class AnsiblePlay extends YamlMappingType {
 
         addField("gather_subset")
                 .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING)
+                .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("Allows you to pass subset options to the fact gathering plugin controlled by gather_facts.");
 
         addField("gather_timeout").setType(YamlTypes.INTEGER)
                 .setDescription("Allows you to set the timeout for the fact gathering plugin controlled by gather_facts.");
 
-        addField("handlers").setType(Sequence, AnsibleTask.TYPE) // TODO: add handler type
+        addField("handlers").setType(SEQUENCE, AnsibleTask.TYPE) // TODO: add handler type
                 .setDescription("A section with tasks that are treated as handlers, these won't get executed normally, only when notified after each section of tasks is complete. A handler's listen field is not templatable.");
 
         addField("hosts").setRequired()
                 .setDescription("A list of groups, hosts or host pattern that translates into a list of hosts that are the play's target.")
                 .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING);
+                .setType(SEQUENCE, YamlTypes.STRING);
 
         addField("max_fail_percentage").setType(YamlTypes.STRING)
                 .setDescription("can be used to abort the run after a given percentage of hosts in the current batch has failed.");
@@ -45,13 +45,13 @@ public class AnsiblePlay extends YamlMappingType {
         addField("order").setType(YamlTypes.STRING)
                 .setDescription("Controls the sorting of hosts as they are used for executing the play. Possible values are inventory (default), sorted, reverse_sorted, reverse_inventory and shuffle.");
 
-        addField("post_tasks").setType(Sequence, AnsibleTask.TYPE)
+        addField("post_tasks").setType(SEQUENCE, AnsibleTask.TYPE)
                 .setDescription("A list of tasks to execute after the tasks section.");
 
-        addField("tasks").setType(Sequence, AnsibleTask.TYPE)
+        addField("tasks").setType(SEQUENCE, AnsibleTask.TYPE)
                 .setDescription("Main list of tasks to execute in the play, they run after roles and before post_tasks.");
 
-        addField("pre_tasks").setType(Sequence, AnsibleTask.TYPE)
+        addField("pre_tasks").setType(SEQUENCE, AnsibleTask.TYPE)
                 .setDescription("A list of tasks to execute before roles.");
 
         addField("roles").setType(YamlTypes.ANY)
@@ -65,10 +65,10 @@ public class AnsiblePlay extends YamlMappingType {
 
         addField("vars_files")
                 .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING)
+                .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("List of files that contain vars to include in the play.");
 
-        addField("vars_prompt").setType(Mapping, new VarsPrompt())
+        addField("vars_prompt").setType(MAPPING, new VarsPrompt())
                 .setDescription("list of variables to prompt for.");
 
         addField("user").setType(YamlTypes.STRING).setDeprecated()

@@ -33,11 +33,11 @@ public class AnsibleModuleField implements YamlField {
     @Override
     public YamlType getType(Relation relation) {
         switch (relation) {
-            case Mapping:
+            case MAPPING:
                 return moduleType;
-            case Scalar:
+            case SCALAR:
                 return YamlTypes.STRING;
-            case Sequence:
+            case SEQUENCE:
             default:
                 return null;
         }

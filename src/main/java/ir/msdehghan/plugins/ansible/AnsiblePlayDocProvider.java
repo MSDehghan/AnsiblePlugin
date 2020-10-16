@@ -52,7 +52,7 @@ public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
 
         @Override
         public String toString() {
-            return null;
+            return "DocPsi";
         }
     }
 }

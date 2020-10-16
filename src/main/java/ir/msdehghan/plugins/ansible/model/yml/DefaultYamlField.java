@@ -13,7 +13,7 @@ import java.util.EnumMap;
 import java.util.stream.Collectors;
 
 import static ir.msdehghan.plugins.ansible.AnsibleUtil.getIcon;
-import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Scalar;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SCALAR;
 
 public class DefaultYamlField implements YamlField {
     private String name;
@@ -100,7 +100,7 @@ public class DefaultYamlField implements YamlField {
      * @return created field
      */
     public DefaultYamlField setType(@NotNull YamlType type) {
-        return setType(Scalar, type);
+        return setType(SCALAR, type);
     }
 
     public DefaultYamlField setType(@NotNull Relation relation,@NotNull YamlType type) {

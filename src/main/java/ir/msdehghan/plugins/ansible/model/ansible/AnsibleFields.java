@@ -1,6 +1,5 @@
 package ir.msdehghan.plugins.ansible.model.ansible;
 
-import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 
@@ -9,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField.create;
-import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SEQUENCE;
 
 public final class AnsibleFields {
     public static final List<YamlField> TAGGABLE = Arrays.asList(getTaggableFields());
@@ -19,7 +18,7 @@ public final class AnsibleFields {
     private static YamlField[] getConditionalFields() {
         YamlField when = create("when")
                 .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING)
+                .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("Conditional expression, determines if an iteration of a task is run or not.");
         return new YamlField[] { when };
     }
@@ -27,7 +26,7 @@ public final class AnsibleFields {
     private static YamlField[] getTaggableFields() {
         YamlField tags = create("tags")
                 .setType(YamlTypes.STRING) //TODO: add always and never
-                .setType(Sequence, YamlTypes.STRING)
+                .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("Tags applied to the task or included tasks, this allows selecting subsets of tasks from the command line.");
         return new YamlField[] { tags };
     }
@@ -48,9 +47,9 @@ public final class AnsibleFields {
                 .setDescription("Used to override the default port used in a connection.");
         list.add(port);
 
-        YamlField remote_user = create("remote_user").setType(YamlTypes.STRING)
+        YamlField remoteUser = create("remote_user").setType(YamlTypes.STRING)
                 .setDescription("User used to log into the target via the connection plugin.");
-        list.add(remote_user);
+        list.add(remoteUser);
 
         // Variables
         YamlField vars = create("vars").setType(YamlTypes.ANY)
@@ -58,42 +57,42 @@ public final class AnsibleFields {
         list.add(vars);
 
         // Module default params
-        YamlField module_defaults = create("module_defaults").setType(YamlTypes.STRING)
+        YamlField moduleDefaults = create("module_defaults").setType(YamlTypes.STRING)
                 .setDescription("Specifies default parameter values for modules.");
-        list.add(module_defaults);
+        list.add(moduleDefaults);
 
         // Flags and misc. settings
         YamlField environment = create("environment").setType(YamlTypes.ANY)
                 .setDescription("A dictionary that gets converted into environment vars to be provided for the task upon execution. This cannot affect Ansible itself nor its configuration, it just sets the variables for the code responsible for executing the task.");
         list.add(environment);
 
-        YamlField no_log = create("no_log").setType(YamlTypes.BOOLEAN)
+        YamlField noLog = create("no_log").setType(YamlTypes.BOOLEAN)
                 .setDescription("Boolean that controls information disclosure.");
-        list.add(no_log);
+        list.add(noLog);
 
-        YamlField run_once = create("run_once").setType(YamlTypes.BOOLEAN)
+        YamlField runOnce = create("run_once").setType(YamlTypes.BOOLEAN)
                 .setDescription("Boolean that will bypass the host loop, forcing the task to attempt to execute on the first host available and afterwards apply any results and facts to all active hosts in the same batch.");
-        list.add(run_once);
+        list.add(runOnce);
 
-        YamlField ignore_errors = create("ignore_errors").setType(YamlTypes.BOOLEAN)
+        YamlField ignoreErrors = create("ignore_errors").setType(YamlTypes.BOOLEAN)
                 .setDescription("Boolean that allows you to ignore task failures and continue with play. It does not affect connection errors.");
-        list.add(ignore_errors);
+        list.add(ignoreErrors);
 
-        YamlField ignore_unreachable = create("ignore_unreachable").setType(YamlTypes.BOOLEAN)
-                .setDescription("Boolean that allows you to ignore unreachable hosts and continue with play. This does not affect other task errors (see ignore_errors) but is useful for groups of volatile/ephemeral hosts.");
-        list.add(ignore_unreachable);
+        YamlField ignoreUnreachable = create("ignore_unreachable").setType(YamlTypes.BOOLEAN)
+                .setDescription("Boolean that allows you to ignore unreachable hosts and continue with play. This does not affect other task errors (see ignoreErrors) but is useful for groups of volatile/ephemeral hosts.");
+        list.add(ignoreUnreachable);
 
-        YamlField check_mode = create("check_mode").setType(YamlTypes.BOOLEAN)
+        YamlField checkMode = create("check_mode").setType(YamlTypes.BOOLEAN)
                 .setDescription("A boolean that controls if a task is executed in 'check' mode");
-        list.add(check_mode);
+        list.add(checkMode);
 
         YamlField diff = create("diff").setType(YamlTypes.STRING)
                 .setDescription("Toggle to make tasks return 'diff' information or not.");
         list.add(diff);
 
-        YamlField any_errors_fatal = create("any_errors_fatal").setType(YamlTypes.STRING)
+        YamlField anyErrorsFatal = create("any_errors_fatal").setType(YamlTypes.STRING)
                 .setDescription("Force any un-handled task errors on any host to propagate to all hosts and end the play.");
-        list.add(any_errors_fatal);
+        list.add(anyErrorsFatal);
 
         YamlField throttle = create("throttle").setType(YamlTypes.INTEGER)
                 .setDescription("Limit number of concurrent task runs on task, block and playbook level. This is independent of the forks and serial settings, but cannot be set higher than those limits. For example, if forks is set to 10 and the throttle is set to 15, at most 10 hosts will be operated on in parallel.");
@@ -109,20 +108,20 @@ public final class AnsibleFields {
                 .setDescription("Boolean that controls if privilege escalation is used or not on Task execution.");
         list.add(become);
 
-        YamlField become_exe = create("become_exe").setType(YamlTypes.STRING);
-        list.add(become_exe);
+        YamlField becomeExe = create("become_exe").setType(YamlTypes.STRING);
+        list.add(becomeExe);
 
-        YamlField become_flags = create("become_flags").setType(YamlTypes.STRING)
+        YamlField becomeFlags = create("become_flags").setType(YamlTypes.STRING)
                 .setDescription("A string of flag(s) to pass to the privilege escalation program when become is True.");
-        list.add(become_flags);
+        list.add(becomeFlags);
 
-        YamlField become_method = create("become_method").setType(YamlTypes.STRING)
+        YamlField becomeMethod = create("become_method").setType(YamlTypes.STRING)
                 .setDescription("Which method of privilege escalation to use (such as sudo or su).");
-        list.add(become_method);
+        list.add(becomeMethod);
 
-        YamlField become_user = create("become_user").setType(YamlTypes.STRING)
+        YamlField becomeUser = create("become_user").setType(YamlTypes.STRING)
                 .setDescription("User that you 'become' after using privilege escalation. The remote/login user must have permissions to become this user.");
-        list.add(become_user);
+        list.add(becomeUser);
 
         return list.toArray(new YamlField[0]);
     }

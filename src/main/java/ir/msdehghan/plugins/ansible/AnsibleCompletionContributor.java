@@ -30,9 +30,4 @@ public class AnsibleCompletionContributor extends CompletionContributor {
             }
         });
     }
-
-    @Override
-    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
-        super.fillCompletionVariants(parameters, result);
-    }
 }

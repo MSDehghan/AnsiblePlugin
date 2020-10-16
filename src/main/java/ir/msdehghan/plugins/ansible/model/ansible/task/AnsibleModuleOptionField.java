@@ -19,7 +19,6 @@ public class AnsibleModuleOptionField implements YamlField {
     public AnsibleModuleOptionField(String name, AnsibleModuleDto.Field field) {
         this.name = name;
         this.field = field;
-        field.required = field.required != null && field.required;
         this.type = computeType();
         this.relation = computeRelation();
     }
@@ -55,14 +54,14 @@ public class AnsibleModuleOptionField implements YamlField {
     }
 
     private Relation computeRelation() {
-        if (field.type == null) return Relation.Scalar;
+        if (field.type == null) return Relation.SCALAR;
         switch (field.type) {
             case "dict":
-                return Relation.Mapping;
+                return Relation.MAPPING;
             case "list":
-                return Relation.Sequence;
+                return Relation.SEQUENCE;
             default:
-                return Relation.Scalar;
+                return Relation.SCALAR;
         }
     }
 

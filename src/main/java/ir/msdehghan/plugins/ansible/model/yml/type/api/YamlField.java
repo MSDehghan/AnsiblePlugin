@@ -1,7 +1,6 @@
 package ir.msdehghan.plugins.ansible.model.yml.type.api;
 
 import com.intellij.codeInsight.lookup.LookupElement;
-import ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 
 public interface YamlField {
@@ -9,11 +8,11 @@ public interface YamlField {
 
     String getName();
 
-    YamlType getType(DefaultYamlField.Relation relation);
+    YamlType getType(Relation relation);
 
     String generateDoc();
 
     enum Relation {
-        Sequence, Mapping, Scalar
+        SEQUENCE, MAPPING, SCALAR
     }
 }

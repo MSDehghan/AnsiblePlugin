@@ -34,11 +34,11 @@ public class AnsibleUtil {
     }
 
     public static Icon getIcon(@NotNull YamlField.Relation relation) {
-        return relation == YamlField.Relation.Sequence ? AllIcons.Json.Array : AllIcons.Json.Object;
+        return relation == YamlField.Relation.SEQUENCE ? AllIcons.Json.Array : AllIcons.Json.Object;
     }
 
     public static String getTypeText(@NotNull YamlField.Relation relation, @NotNull YamlType type) {
-        if (relation == YamlField.Relation.Scalar) {
+        if (relation == YamlField.Relation.SCALAR) {
             return type.getName();
         } else {
             return type == YamlTypes.ANY ? relation.name() : relation.name() + '[' + type.getName() + ']';

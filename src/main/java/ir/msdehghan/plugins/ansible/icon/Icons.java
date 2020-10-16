@@ -6,4 +6,8 @@ import javax.swing.*;
 
 public class Icons {
     public static final Icon ANSIBLE_FILE = IconLoader.getIcon("/icons/ansible_file.svg");
+
+    private Icons() {
+        // Must not be instantiated
+    }
 }

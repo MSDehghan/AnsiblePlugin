@@ -1,6 +1,5 @@
 package ir.msdehghan.plugins.ansible.model.ansible.task;
 
-import ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields;
 import ir.msdehghan.plugins.ansible.model.ansible.play.LoopControl;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
@@ -11,8 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
-import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Mapping;
-import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.Sequence;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.MAPPING;
+import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SEQUENCE;
 
 public class AnsibleTask extends YamlMappingType {
     public static final AnsibleTask TYPE = new AnsibleTask();
@@ -26,7 +25,7 @@ public class AnsibleTask extends YamlMappingType {
         TAGGABLE.forEach(this::addField);
 
         addField("args")
-                .setType(Mapping, YamlTypes.ANY)
+                .setType(MAPPING, YamlTypes.ANY)
                 .setDescription("A secondary way to add arguments into a task. Takes a dictionary in which keys map to options and values.");
 
         addField("action")
@@ -39,7 +38,7 @@ public class AnsibleTask extends YamlMappingType {
 
         addField("changed_when")
                 .setType(YamlTypes.BOOLEAN)
-                .setType(Sequence, YamlTypes.BOOLEAN)
+                .setType(SEQUENCE, YamlTypes.BOOLEAN)
                 .setDescription("");
 
         addField("delay")
@@ -56,20 +55,20 @@ public class AnsibleTask extends YamlMappingType {
 
         addField("failed_when")
                 .setType(YamlTypes.BOOLEAN)
-                .setType(Sequence, YamlTypes.BOOLEAN)
+                .setType(SEQUENCE, YamlTypes.BOOLEAN)
                 .setDescription("");
 
         addField("loop")
-                .setType(Sequence, YamlTypes.ANY)
+                .setType(SEQUENCE, YamlTypes.ANY)
                 .setDescription("");
 
         addField("loop_control")
-                .setType(Mapping, new LoopControl())
+                .setType(MAPPING, new LoopControl())
                 .setDescription("");
 
         addField("notify")
                 .setType(YamlTypes.STRING)
-                .setType(Sequence, YamlTypes.STRING)
+                .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("");
 
         addField("poll")
@@ -85,19 +84,19 @@ public class AnsibleTask extends YamlMappingType {
                 .setDescription("Default: 3");
 
         addField("block")
-                .setType(Sequence, this)
+                .setType(SEQUENCE, this)
                 .setDescription("Blocks create logical groups of tasks. Blocks also offer ways to handle task errors," +
                         " similar to exception handling in many programming languages. See 'rescue' and 'always' fields.");
 
         addField("rescue")
-                .setType(Sequence, this)
+                .setType(SEQUENCE, this)
                 .setDescription("Rescue blocks specify tasks to run when an earlier task in a block fails. " +
                         "This approach is similar to exception handling in many programming languages. " +
                         "Ansible only runs rescue blocks after a task returns a ‘failed’ state. " +
                         "Bad task definitions and unreachable hosts will not trigger the rescue block.");
 
         addField("always")
-                .setType(Sequence, this)
+                .setType(SEQUENCE, this)
                 .setDescription("Tasks in the always section run no matter what the task status of the previous block is.");
 
         loadPluginNames();
