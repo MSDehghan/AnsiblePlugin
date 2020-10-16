@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
+import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.getTaggableGroup;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.MAPPING;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SEQUENCE;
 
@@ -18,11 +19,12 @@ public class AnsibleTask extends YamlMappingType {
     private static final int FIELDS_SIZE = 20;
 
     private AnsibleTask() {
-        super("Task", FIELDS_SIZE + BASE.size() + CONDITIONAL.size() + TAGGABLE.size());
+        super("Task", FIELDS_SIZE + getBaseGroup().size() + getConditionalGroup().size()
+                + getTaggableGroup().size());
 
-        BASE.forEach(this::addField);
-        CONDITIONAL.forEach(this::addField);
-        TAGGABLE.forEach(this::addField);
+        getBaseGroup().forEach(this::addField);
+        getConditionalGroup().forEach(this::addField);
+        getTaggableGroup().forEach(this::addField);
 
         addField("args")
                 .setType(MAPPING, YamlTypes.ANY)

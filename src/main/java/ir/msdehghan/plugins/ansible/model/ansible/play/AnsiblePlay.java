@@ -9,10 +9,11 @@ import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation
 
 public class AnsiblePlay extends YamlMappingType {
     public AnsiblePlay() {
-        super("AnsiblePlay", 18 + AnsibleFields.BASE.size() + AnsibleFields.TAGGABLE.size());
+        super("AnsiblePlay", 18 + AnsibleFields.getBaseGroup().size() +
+                AnsibleFields.getTaggableGroup().size());
 
-        AnsibleFields.BASE.forEach(this::addField);
-        AnsibleFields.TAGGABLE.forEach(this::addField);
+        AnsibleFields.getBaseGroup().forEach(this::addField);
+        AnsibleFields.getTaggableGroup().forEach(this::addField);
 
         addField("fact_path").setType(YamlTypes.STRING)
                 .setDescription("Set the fact path option for the fact gathering plugin controlled by gather_facts.");

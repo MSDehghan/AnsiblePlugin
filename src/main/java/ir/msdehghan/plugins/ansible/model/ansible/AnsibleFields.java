@@ -11,11 +11,23 @@ import static ir.msdehghan.plugins.ansible.model.yml.DefaultYamlField.create;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SEQUENCE;
 
 public final class AnsibleFields {
-    public static final List<YamlField> TAGGABLE = Arrays.asList(getTaggableFields());
-    public static final List<YamlField> CONDITIONAL = Arrays.asList(getConditionalFields());
-    public static final List<YamlField> BASE = Arrays.asList(getBaseFields());
+    private static final List<YamlField> TAGGABLE = Arrays.asList(createTaggableFields());
+    private static final List<YamlField> CONDITIONAL = Arrays.asList(createConditionalFields());
+    private static final List<YamlField> BASE = Arrays.asList(createBaseFields());
 
-    private static YamlField[] getConditionalFields() {
+    public static List<YamlField> getTaggableGroup() {
+        return TAGGABLE;
+    }
+
+    public static List<YamlField> getConditionalGroup() {
+        return CONDITIONAL;
+    }
+
+    public static List<YamlField> getBaseGroup() {
+        return BASE;
+    }
+
+    private static YamlField[] createConditionalFields() {
         YamlField when = create("when")
                 .setType(YamlTypes.STRING)
                 .setType(SEQUENCE, YamlTypes.STRING)
@@ -23,7 +35,7 @@ public final class AnsibleFields {
         return new YamlField[] { when };
     }
 
-    private static YamlField[] getTaggableFields() {
+    private static YamlField[] createTaggableFields() {
         YamlField tags = create("tags")
                 .setType(YamlTypes.STRING) //TODO: add always and never
                 .setType(SEQUENCE, YamlTypes.STRING)
@@ -31,7 +43,7 @@ public final class AnsibleFields {
         return new YamlField[] { tags };
     }
 
-    private static YamlField[] getBaseFields() {
+    private static YamlField[] createBaseFields() {
         List<YamlField> list = new ArrayList<>();
 
         YamlField name = create("name").setType(YamlTypes.STRING)

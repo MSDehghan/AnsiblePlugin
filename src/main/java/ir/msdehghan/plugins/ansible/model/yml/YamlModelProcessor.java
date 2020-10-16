@@ -7,6 +7,7 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
@@ -17,17 +18,13 @@ public class YamlModelProcessor {
         this.rootField = rootField;
     }
 
+    @Nullable
     public ElementSchemaInfo locate(PsiElement element) {
-        YAMLValue value;
-        if (element instanceof YAMLValue) {
-            value = (YAMLValue) element;
-        } else if (element != null && element.getContainingFile() instanceof YAMLFile) {
-            value = PsiTreeUtil.getParentOfType(element, YAMLValue.class, false);
-        } else {
-            return null;
-        }
+        YAMLValue value = getNearestYamlValue(element);
+        if (value == null) return null;
 
-        PsiElement parent = PsiTreeUtil.getParentOfType(value, YAMLKeyValue.class, YAMLSequenceItem.class, YAMLDocument.class);
+        PsiElement parent = PsiTreeUtil.getParentOfType(value, YAMLKeyValue.class, YAMLSequenceItem.class,
+                YAMLDocument.class);
         if (parent instanceof YAMLDocument) {
             return ElementSchemaInfo.createOrNull(rootField, YamlField.Relation.MAPPING);
         } else if (parent instanceof YAMLSequenceItem) {
@@ -50,6 +47,17 @@ public class YamlModelProcessor {
             return ElementSchemaInfo.createOrNull(field, relation);
         }
         return null;
+    }
+
+    @Nullable
+    private YAMLValue getNearestYamlValue(PsiElement element) {
+        if (element instanceof YAMLValue) {
+            return (YAMLValue) element;
+        } else if (element != null && element.getContainingFile() instanceof YAMLFile) {
+            return PsiTreeUtil.getParentOfType(element, YAMLValue.class, false);
+        } else {
+            return null;
+        }
     }
 
     private boolean isValue(YAMLScalar scalar) {
