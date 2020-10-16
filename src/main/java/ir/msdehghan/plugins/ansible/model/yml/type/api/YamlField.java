@@ -1,7 +1,10 @@
 package ir.msdehghan.plugins.ansible.model.yml.type.api;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.openapi.util.text.StringUtil;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
+
+import static java.lang.Character.toUpperCase;
 
 public interface YamlField {
     LookupElement getLookupElement();
@@ -13,6 +16,12 @@ public interface YamlField {
     String generateDoc();
 
     enum Relation {
-        SEQUENCE, MAPPING, SCALAR
+        SEQUENCE, MAPPING, SCALAR;
+
+
+        @Override
+        public String toString() {
+            return toUpperCase(name().charAt(0)) + name().substring(1).toLowerCase();
+        }
     }
 }

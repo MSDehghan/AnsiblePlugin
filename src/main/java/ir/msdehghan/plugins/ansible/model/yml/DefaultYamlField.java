@@ -110,7 +110,6 @@ public class DefaultYamlField implements YamlField {
     }
 
     @Override
-    @NotNull
     public YamlType getType(Relation relation) {
         return valueTypeMap.get(relation);
     }
@@ -129,7 +128,7 @@ public class DefaultYamlField implements YamlField {
             sb.append("<b><i>").append("Deprecated").append("</i></b>").append(NEW_LINE);
         }
 
-        String types = valueTypeMap.entrySet().stream().map(e -> e.getValue().getName() + "(" + e.getKey().name() + ")")
+        String types = valueTypeMap.entrySet().stream().map(e -> e.getValue().getName() + "(" + e.getKey() + ")")
                 .collect(Collectors.joining("/"));
 
         sb.append("Possible values: ").append(types).append(NEW_LINE);

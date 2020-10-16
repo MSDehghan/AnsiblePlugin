@@ -41,7 +41,7 @@ public class AnsibleUtil {
         if (relation == YamlField.Relation.SCALAR) {
             return type.getName();
         } else {
-            return type == YamlTypes.ANY ? relation.name() : relation.name() + '[' + type.getName() + ']';
+            return type == YamlTypes.ANY ? relation.toString() : relation.toString() + '[' + type.getName() + ']';
         }
     }
 }
