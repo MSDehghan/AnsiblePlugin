@@ -36,6 +36,7 @@ sonarqube {
 }
 
 tasks{
+    sonarqube.get().dependsOn(jacocoTestReport)
     jacocoTestReport {
         dependsOn(test)
         reports {
