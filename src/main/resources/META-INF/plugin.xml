@@ -33,11 +33,12 @@
 
     <change-notes>
         <![CDATA[
-        <h2>0.12-SNAPSHOT</h2>
+        <h2>0.12</h2>
         <ul>
-          <li>Fix NPE in yaml sequences </li>
-          <li>Support block,always and rescue fields </li>
-          <li>Fix not showing help in some cases </li>
+          <li>Fix NPE in yaml sequences</li>
+          <li>Support block,always and rescue fields</li>
+          <li>Fix not showing help in some cases</li>
+          <li>Many small improvements to code</li>
         </ul>
         <h2>0.11</h2>
         <ul>
