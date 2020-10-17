@@ -1,0 +1,8 @@
+- name: Play1
+  hosts: h1
+  tasks:
+    - copy:
+        <caret>
+
+- name: Play2
+  hosts: h2

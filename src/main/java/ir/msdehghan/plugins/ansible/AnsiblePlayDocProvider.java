@@ -9,7 +9,6 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLLanguage;
-import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import java.util.Optional;
@@ -21,17 +20,16 @@ public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         if (element instanceof DocPsi) {
             return ((DocPsi) element).field.generateDoc();
-        } else {
-            if (originalElement != null && !originalElement.getNode().getElementType().equals(YAMLTokenTypes.SCALAR_KEY))
-                return null;
-            YamlModelProcessor.ElementSchemaInfo schemaInfo = PLAY_MODEL_PROCESSOR.locate(originalElement);
-            if (schemaInfo == null || schemaInfo.getType() == null ||
-                    !(schemaInfo.getType() instanceof MappingType) || !(element instanceof YAMLKeyValue)) {
+        } else if (element instanceof YAMLKeyValue){
+            YAMLKeyValue keyValue = (YAMLKeyValue) element;
+            YamlModelProcessor.ElementSchemaInfo schemaInfo = PLAY_MODEL_PROCESSOR.locate(keyValue);
+            if (schemaInfo == null || schemaInfo.getType() == null || !(schemaInfo.getType() instanceof MappingType)) {
                 return null;
             }
-            Optional<YamlField> field = ((MappingType) schemaInfo.getType()).getFieldByName(((YAMLKeyValue) element).getKeyText());
+            Optional<YamlField> field = ((MappingType) schemaInfo.getType()).getFieldByName(keyValue.getKeyText());
             return field.map(YamlField::generateDoc).orElse(null);
         }
+        return null;
     }
 
     @Override

@@ -1,0 +1,7 @@
+- name: Play1
+  hosts: h1
+  tasks:
+    - digital<caret>_ocean:
+
+- name: Play2
+  hosts: h2
