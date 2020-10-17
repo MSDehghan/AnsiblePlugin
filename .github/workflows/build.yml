@@ -33,8 +33,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build --info
 
+    - name: Test
+      run: ./gradlew check --info
+
     - name: Scan project using SonarQube
-      run: ./gradlew :sonarqube --info
+      run: ./gradlew sonarqube --info
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
