@@ -39,5 +39,19 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+    - name: Verify Plugin on IntelliJ Platforms
+      id: verify
+      uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
+      with:
+        ide-versions: |
+          ideaIC:2018.2
+          ideaIC:2019.2
+          ideaIC:2020.2
+
+    - name: Get log file path and print contents
+      run: |
+        echo "The verifier log file [${{steps.verify.outputs.verification-output-log-filename}}] contents : " ;
+        cat ${{steps.verify.outputs.verification-output-log-filename}}
+
     - name: Stop Gradle daemon
       run: ./gradlew --stop
