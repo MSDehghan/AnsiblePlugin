@@ -47,11 +47,7 @@ jobs:
           ideaIC:2018.2
           ideaIC:2019.2
           ideaIC:2020.2
-
-    - name: Get log file path and print contents
-      run: |
-        echo "The verifier log file [${{steps.verify.outputs.verification-output-log-filename}}] contents : " ;
-        cat ${{steps.verify.outputs.verification-output-log-filename}}
+          ideaIC:LATEST-EAP-SNAPSHOT
 
     - name: Stop Gradle daemon
       run: ./gradlew --stop
