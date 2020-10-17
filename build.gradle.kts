@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.sonarqube") version "3.0"
     id("org.jetbrains.intellij") version "0.5.0"
 }
@@ -34,6 +35,14 @@ sonarqube {
     }
 }
 
-tasks.buildSearchableOptions {
-    enabled = false
+tasks{
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.isEnabled = true
+        }
+    }
+    buildSearchableOptions {
+        enabled = false
+    }
 }
