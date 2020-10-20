@@ -1,4 +1,5 @@
 import com.intellij.codeInsight.documentation.DocumentationManager;
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
@@ -12,7 +13,7 @@ public class TestDoc extends BasePlatformTestCase {
 
     static {
         try {
-            TEST_PATH = Paths.get(TestPlayCompletion.class.getResource("/doc").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestCompletion.class.getResource("/doc").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -36,10 +37,11 @@ public class TestDoc extends BasePlatformTestCase {
     public void testModuleLookupDoc() {
         PsiFile file = configureFileByTestName();
         myFixture.completeBasic();
+        assertNotNull("Lookup must be shown", LookupManager.getInstance(myFixture.getProject()).getActiveLookup());
         String doc = getDocInCaret(file);
-        assertTrue(doc.contains("Module copy"));
+        assertTrue(doc.contains("Module command"));
         assertTrue(doc.contains("Notes"));
-        assertTrue(doc.contains("The 'copy' module copies a file from the local or remote machine"));
+        assertTrue(doc.contains("Execute commands on targets"));
         assertTrue(doc.contains("Added in"));
     }
 
@@ -56,6 +58,12 @@ public class TestDoc extends BasePlatformTestCase {
         assertTrue(doc.contains("This field is required"));
         assertTrue(doc.contains("A list of groups, hosts or host pattern that translates into a list of hosts that are" +
                 " the play's target."));
+    }
+
+    public void testRoleModuleOptionGenerateDoc() {
+        PsiFile file = myFixture.configureByFile("role/handlers/main.yml");
+        String doc = getDocInCaret(file);
+        assertTrue(doc.contains("Name of the service"));
     }
 
     public void testWrongPlace() {

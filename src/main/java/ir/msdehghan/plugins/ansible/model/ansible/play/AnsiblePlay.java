@@ -55,7 +55,7 @@ public class AnsiblePlay extends YamlMappingType {
         addField("pre_tasks").setType(SEQUENCE, AnsibleTask.TYPE)
                 .setDescription("A list of tasks to execute before roles.");
 
-        addField("roles").setType(YamlTypes.ANY)
+        addField("roles").setType(SEQUENCE, YamlTypes.ANY)
                 .setDescription("List of roles to be imported into the play");
 
         addField("serial").setType(YamlTypes.INTEGER)

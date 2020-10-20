@@ -1,6 +1,8 @@
 - name: Play1
   hosts: h1
   tasks:
+    - systemd:
+
     - become: <caret>
 
 - name: Play2

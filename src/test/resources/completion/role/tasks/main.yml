@@ -1,0 +1,12 @@
+- name: Create kafka group
+  group:
+    name: '{{ kafka_group }}'
+    state: present
+  tags:
+    - kafka_group
+
+- name: Create kafka user
+  systemd:
+    <caret>
+  tags:
+    - kafka_user

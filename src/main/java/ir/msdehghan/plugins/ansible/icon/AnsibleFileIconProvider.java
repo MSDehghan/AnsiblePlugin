@@ -17,6 +17,6 @@ public class AnsibleFileIconProvider implements FileIconProvider {
     public @Nullable Icon getIcon(@NotNull VirtualFile file, int flags, @Nullable Project project) {
         if (project == null) return null;
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-        return AnsibleUtil.isInPlayBook(psiFile) ? Icons.ANSIBLE_FILE : null;
+        return AnsibleUtil.isInAnsibleFile(psiFile) ? Icons.ANSIBLE_FILE : null;
     }
 }

@@ -26,7 +26,7 @@ public class AnsibleCompletionContributor extends CompletionContributor {
         return PlatformPatterns.psiElement().andOr(inserted, updatedKey).with(new PatternCondition<PsiElement>("In Ansible") {
             @Override
             public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext context) {
-                return AnsibleUtil.isInPlayBook(psiElement);
+                return AnsibleUtil.isInAnsibleFile(psiElement);
             }
         });
     }

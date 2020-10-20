@@ -4,14 +4,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
-public class TestPlayCompletion extends BasePlatformTestCase {
+public class TestCompletion extends BasePlatformTestCase {
     private static final String TEST_PATH;
 
     static {
         try {
-            TEST_PATH = Paths.get(TestPlayCompletion.class.getResource("/completion").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestCompletion.class.getResource("/completion").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -69,6 +70,12 @@ public class TestPlayCompletion extends BasePlatformTestCase {
     public void testWrongPlace() {
         configureFileByTestName();
         assertEquals(0, myFixture.completeBasic().length);
+    }
+
+    public void testCompletionInRole() {
+        List<String> completionVariants = myFixture.getCompletionVariants("role/tasks/main.yml");
+        assertNotEmpty(completionVariants);
+        assertContainsElements(completionVariants, "name", "state");
     }
 
     private void configureFileByTestName() {

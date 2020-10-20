@@ -11,12 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
 
-public class YamlModelProcessor {
-    private final YamlField rootField;
-
-    public YamlModelProcessor(YamlField rootField) {
-        this.rootField = rootField;
-    }
+public abstract class YamlModelProcessor {
+    protected abstract YamlField getRootField(YAMLDocument document);
 
     @Nullable
     public ElementSchemaInfo locate(PsiElement element) {
@@ -26,7 +22,7 @@ public class YamlModelProcessor {
         PsiElement parent = PsiTreeUtil.getParentOfType(value, YAMLKeyValue.class, YAMLSequenceItem.class,
                 YAMLDocument.class);
         if (parent instanceof YAMLDocument) {
-            return ElementSchemaInfo.createOrNull(rootField, YamlField.Relation.MAPPING);
+            return ElementSchemaInfo.createOrNull(getRootField((YAMLDocument) parent), YamlField.Relation.MAPPING);
         } else if (parent instanceof YAMLSequenceItem) {
             ElementSchemaInfo seqParent = locate(parent.getParent());
             if (seqParent == null) return null;
