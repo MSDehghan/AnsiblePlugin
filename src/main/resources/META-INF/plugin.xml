@@ -57,6 +57,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor language="yaml" implementationClass="ir.msdehghan.plugins.ansible.AnsibleCompletionContributor"/>
+        <psi.referenceContributor language="yaml" implementation="ir.msdehghan.plugins.ansible.reference.AnsibleReferenceContributor" />
         <documentationProvider implementation="ir.msdehghan.plugins.ansible.AnsiblePlayDocProvider" />
         <fileIconProvider implementation="ir.msdehghan.plugins.ansible.icon.AnsibleFileIconProvider" />
         <fileType name="YAML" patterns="*playbook.yml;*playbook.yaml" fileNames="main.yml;main.yaml" />

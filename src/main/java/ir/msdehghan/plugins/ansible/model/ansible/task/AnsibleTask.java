@@ -16,7 +16,7 @@ import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation
 
 public class AnsibleTask extends YamlMappingType {
     public static final AnsibleTask TYPE = new AnsibleTask();
-    private static final int FIELDS_SIZE = 20;
+    private static final int FIELDS_SIZE = 18;
 
     private AnsibleTask() {
         super("Task", FIELDS_SIZE + getBaseGroup().size() + getConditionalGroup().size()
@@ -25,6 +25,7 @@ public class AnsibleTask extends YamlMappingType {
         getBaseGroup().forEach(this::addField);
         getConditionalGroup().forEach(this::addField);
         getTaggableGroup().forEach(this::addField);
+        getDelegateGroup().forEach(this::addField);
 
         addField("args")
                 .setType(MAPPING, YamlTypes.ANY)
@@ -46,14 +47,6 @@ public class AnsibleTask extends YamlMappingType {
         addField("delay")
                 .setType(YamlTypes.INTEGER)
                 .setDescription("Default: 5");
-
-        addField("delegate_to")
-                .setType(YamlTypes.STRING)
-                .setDescription("");
-
-        addField("delegate_facts")
-                .setType(YamlTypes.BOOLEAN)
-                .setDescription("");
 
         addField("failed_when")
                 .setType(YamlTypes.BOOLEAN)

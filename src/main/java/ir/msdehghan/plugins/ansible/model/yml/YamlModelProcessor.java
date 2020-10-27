@@ -7,6 +7,7 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLTokenTypes;
 import org.jetbrains.yaml.psi.*;
@@ -68,10 +69,12 @@ public abstract class YamlModelProcessor {
         private final YamlField field;
         private final Relation relation;
 
+        @NotNull
         public YamlField getField() {
             return field;
         }
 
+        @NotNull
         public Relation getRelation() {
             return relation;
         }
@@ -80,7 +83,7 @@ public abstract class YamlModelProcessor {
             return field.getType(relation);
         }
 
-        public ElementSchemaInfo(YamlField field, Relation relation) {
+        public ElementSchemaInfo(@NotNull YamlField field,@NotNull Relation relation) {
             this.field = field;
             this.relation = relation;
         }

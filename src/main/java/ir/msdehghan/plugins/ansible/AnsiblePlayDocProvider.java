@@ -13,7 +13,7 @@ import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import java.util.Optional;
 
-import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
+import static ir.msdehghan.plugins.ansible.AnsibleModels.MODEL_PROCESSOR;
 
 public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
     @Override
@@ -22,7 +22,7 @@ public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
             return ((DocPsi) element).field.generateDoc();
         } else if (element instanceof YAMLKeyValue){
             YAMLKeyValue keyValue = (YAMLKeyValue) element;
-            YamlModelProcessor.ElementSchemaInfo schemaInfo = PLAY_MODEL_PROCESSOR.locate(keyValue);
+            YamlModelProcessor.ElementSchemaInfo schemaInfo = MODEL_PROCESSOR.locate(keyValue);
             if (schemaInfo == null || schemaInfo.getType() == null || !(schemaInfo.getType() instanceof MappingType)) {
                 return null;
             }

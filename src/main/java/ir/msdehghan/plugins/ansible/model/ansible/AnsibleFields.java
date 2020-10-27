@@ -13,6 +13,7 @@ import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation
 public final class AnsibleFields {
     private static final List<YamlField> TAGGABLE = Arrays.asList(createTaggableFields());
     private static final List<YamlField> CONDITIONAL = Arrays.asList(createConditionalFields());
+    private static final List<YamlField> DELEGATE = Arrays.asList(createDelegateFields());
     private static final List<YamlField> BASE = Arrays.asList(createBaseFields());
 
     public static List<YamlField> getTaggableGroup() {
@@ -21,6 +22,10 @@ public final class AnsibleFields {
 
     public static List<YamlField> getConditionalGroup() {
         return CONDITIONAL;
+    }
+
+    public static List<YamlField> getDelegateGroup() {
+        return DELEGATE;
     }
 
     public static List<YamlField> getBaseGroup() {
@@ -41,6 +46,17 @@ public final class AnsibleFields {
                 .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("Tags applied to the task or included tasks, this allows selecting subsets of tasks from the command line.");
         return new YamlField[] { tags };
+    }
+
+    private static YamlField[] createDelegateFields() {
+        YamlField delegateTo = create("delegate_to")
+                .setType(YamlTypes.STRING)
+                .setDescription("Host to execute task instead of the target 'inventory_hostname'. Connection vars from the delegated host will also be used for the task.");
+
+        YamlField delegateFacts = create("delegate_facts")
+                .setType(YamlTypes.BOOLEAN)
+                .setDescription("Boolean that allows you to apply facts to a delegated host instead of inventory_hostname.");
+        return new YamlField[] { delegateTo, delegateFacts };
     }
 
     private static YamlField[] createBaseFields() {
