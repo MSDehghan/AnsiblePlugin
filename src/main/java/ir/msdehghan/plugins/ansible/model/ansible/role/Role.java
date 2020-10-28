@@ -23,13 +23,13 @@ public class Role extends YamlMappingType implements ReferenceProvider {
 
     protected Role() {
         super("Sequence[Role/String]", FIELDS_SIZE + getBaseGroup().size() + getConditionalGroup().size()
-                + getTaggableGroup().size() + getDelegateGroup().size());
-
+                + getTaggableGroup().size() + getConditionalGroup().size() + getDelegateGroup().size());
 
         getBaseGroup().forEach(this::addField);
         getConditionalGroup().forEach(this::addField);
         getTaggableGroup().forEach(this::addField);
         getDelegateGroup().forEach(this::addField);
+        getCollectionsGroup().forEach(this::addField);
 
         addField("role")
                 .setType(RoleName.TYPE)

@@ -14,6 +14,7 @@ public final class AnsibleFields {
     private static final List<YamlField> TAGGABLE = Arrays.asList(createTaggableFields());
     private static final List<YamlField> CONDITIONAL = Arrays.asList(createConditionalFields());
     private static final List<YamlField> DELEGATE = Arrays.asList(createDelegateFields());
+    private static final List<YamlField> COLLECTIONS = Arrays.asList(createCollectionsFields());
     private static final List<YamlField> BASE = Arrays.asList(createBaseFields());
 
     public static List<YamlField> getTaggableGroup() {
@@ -28,6 +29,10 @@ public final class AnsibleFields {
         return DELEGATE;
     }
 
+    public static List<YamlField> getCollectionsGroup() {
+        return COLLECTIONS;
+    }
+
     public static List<YamlField> getBaseGroup() {
         return BASE;
     }
@@ -38,6 +43,15 @@ public final class AnsibleFields {
                 .setType(SEQUENCE, YamlTypes.STRING)
                 .setDescription("Conditional expression, determines if an iteration of a task is run or not.");
         return new YamlField[] { when };
+    }
+
+    private static YamlField[] createCollectionsFields() {
+        YamlField collections = create("collections")
+                .setType(SEQUENCE, YamlTypes.STRING)
+                .setDescription("List of collection namespaces to search for modules, plugins, and roles.\n\n" +
+                        "Note: Tasks within a role do not inherit the value of collections from the play." +
+                        " To have a role search a list of collections, use the collections keyword in meta/main.yml within a role.");
+        return new YamlField[] { collections };
     }
 
     private static YamlField[] createTaggableFields() {
