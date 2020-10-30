@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ir.msdehghan.plugins.ansible.AnsibleModels.PLAY_MODEL_PROCESSOR;
+import static ir.msdehghan.plugins.ansible.AnsibleModels.MODEL_PROCESSOR;
 
 public class AnsiblePlayCompletionProvider extends CompletionProvider<CompletionParameters> {
 
@@ -25,7 +25,7 @@ public class AnsiblePlayCompletionProvider extends CompletionProvider<Completion
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         final PsiElement element = parameters.getPosition();
 
-        final ElementSchemaInfo schemaPosition = PLAY_MODEL_PROCESSOR.locate(element);
+        final ElementSchemaInfo schemaPosition = MODEL_PROCESSOR.locate(element);
 
         if (schemaPosition == null || schemaPosition.getType() == null) return;
         final YamlType type = schemaPosition.getType();

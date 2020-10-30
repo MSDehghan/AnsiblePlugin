@@ -13,7 +13,7 @@ public class AnsibleModels {
     public static final AnsiblePlay PLAY = new AnsiblePlay();
     public static final YamlField ROOT_PLAY_FIELD = DefaultYamlField.create("<Play Root>").setType(SEQUENCE, PLAY);
     public static final YamlField ROOT_ROLE_FIELD = DefaultYamlField.create("<Role Root>").setType(SEQUENCE, AnsibleTask.TYPE);
-    public static final YamlModelProcessor PLAY_MODEL_PROCESSOR = new YamlModelProcessor() {
+    public static final YamlModelProcessor MODEL_PROCESSOR = new YamlModelProcessor() {
 
         @Override
         protected YamlField getRootField(YAMLDocument document) {

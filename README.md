@@ -9,11 +9,12 @@ Plugin that helps develop ansible files.
 
 ## Features
 * Autocomplete playbooks fields
+* Autocomplete role fields
 * Autocomplete Ansible modules fields
 * Access to all ansible docs locally
+* Suggest role names
 
 ## Features in progress
-* Autocompletion in Ansible roles
 * Suggest defined variables
 * Go to variable
 * Go to play
