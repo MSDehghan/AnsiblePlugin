@@ -1,7 +1,7 @@
 - name: Play1
   hosts: h1
   tasks:
-    - co<caret>:
+    - com<caret>:
 
 - name: Play2
   hosts: h2
