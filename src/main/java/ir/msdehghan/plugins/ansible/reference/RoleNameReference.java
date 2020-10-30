@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLFileType;
 import org.jetbrains.yaml.psi.YAMLScalar;
@@ -19,11 +20,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RoleNameReference extends PsiReferenceBase.Poly<YAMLScalar> {
-    private static final Pattern ROLE_PATH_PATTERN = Pattern.compile("/roles/([^/]+?)/tasks/main.ya?ml$");
+    private static final Pattern ROLE_PATH_PATTERN = Pattern.compile("/roles/(.+?)/tasks/main.ya?ml$");
     private static final String ROLE_PATH_STRING = "/roles/[name]/tasks/main.ya?ml$";
 
     public RoleNameReference(YAMLScalar element) {
         super(element, true);
+    }
+
+    private static LookupElement createLookupElement(String name) {
+        return LookupElementBuilder.create(name)
+                .withIcon(AllIcons.Actions.GroupByModuleGroup)
+                .withTypeText("Ansible Role");
     }
 
     @Override
@@ -32,14 +39,24 @@ public class RoleNameReference extends PsiReferenceBase.Poly<YAMLScalar> {
 
         Collection<VirtualFile> yamlFiles = FileTypeIndex.getFiles(YAMLFileType.YML,
                 GlobalSearchScope.projectScope(myElement.getProject()));
-        Set<PsiFile> roles = new HashSet<>();
+        Set<PsiDirectory> roles = new HashSet<>();
         for (VirtualFile file : yamlFiles) {
             final String path = file.getPath();
             if (rolePattern.matcher(path).find()) {
-                roles.add(PsiManager.getInstance(myElement.getProject()).findFile(file));
+                roles.add(PsiManager.getInstance(myElement.getProject()).findDirectory(file.getParent().getParent()));
             }
         }
         return PsiElementResolveResult.createResults(roles);
+    }
+
+    @Override
+    public PsiElement handleElementRename(@NotNull String newElementName) {
+        return myElement; // We do not support rename role name cause it can hurt other part of project.
+    }
+
+    @Override
+    public PsiElement bindToElement(@NotNull PsiElement element) {
+        return myElement; // We do not support rename role name cause it can hurt other part of project.
     }
 
     @Override
@@ -55,11 +72,5 @@ public class RoleNameReference extends PsiReferenceBase.Poly<YAMLScalar> {
             }
         }
         return roles.stream().map(RoleNameReference::createLookupElement).toArray();
-    }
-
-    private static LookupElement createLookupElement(String name) {
-        return LookupElementBuilder.create(name)
-                .withIcon(AllIcons.Actions.GroupByModuleGroup)
-                .withTypeText("Ansible Role");
     }
 }

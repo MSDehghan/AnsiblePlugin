@@ -1,0 +1,4 @@
+- hosts: localhost
+  name: Test Role Reference
+  roles:
+    - <caret>
