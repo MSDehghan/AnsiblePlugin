@@ -1,3 +1,5 @@
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.IconLoader.CachedImageIcon;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
@@ -33,7 +35,7 @@ public class TestIcons extends BasePlatformTestCase {
         if (icon instanceof DeferredIconImpl) {
             icon = ((DeferredIconImpl<?>) icon).retrieveIcon();
         }
-        assertSame(Icons.ANSIBLE_FILE, icon);
+        assertSame(((CachedImageIcon) Icons.ANSIBLE_FILE).getOriginalPath(), ((CachedImageIcon) icon).getOriginalPath());
     }
 
     private PsiFile configureFileByTestName() {
