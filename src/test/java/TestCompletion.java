@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestCompletion extends BasePlatformTestCase {
@@ -12,7 +11,7 @@ public class TestCompletion extends BasePlatformTestCase {
 
     static {
         try {
-            TEST_PATH = Paths.get(TestCompletion.class.getResource("/completion").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestCompletion.class.getResource("/testData/completion").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

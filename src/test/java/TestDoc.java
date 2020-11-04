@@ -13,7 +13,7 @@ public class TestDoc extends BasePlatformTestCase {
 
     static {
         try {
-            TEST_PATH = Paths.get(TestCompletion.class.getResource("/doc").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestCompletion.class.getResource("/testData/doc").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

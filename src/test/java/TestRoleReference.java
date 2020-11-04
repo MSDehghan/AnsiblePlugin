@@ -14,7 +14,7 @@ public class TestRoleReference extends BasePlatformTestCase {
 
     static {
         try {
-            TEST_PATH = Paths.get(TestRoleReference.class.getResource("/roleReference").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestRoleReference.class.getResource("/testData/roleReference").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

@@ -17,7 +17,7 @@ public class TestIcons extends BasePlatformTestCase {
 
     static {
         try {
-            TEST_PATH = Paths.get(TestCompletion.class.getResource("/icons").toURI()).toAbsolutePath()
+            TEST_PATH = Paths.get(TestCompletion.class.getResource("/testData/icons").toURI()).toAbsolutePath()
                     .toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
