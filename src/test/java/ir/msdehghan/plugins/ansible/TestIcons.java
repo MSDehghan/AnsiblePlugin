@@ -1,4 +1,5 @@
-import com.intellij.openapi.util.IconLoader;
+package ir.msdehghan.plugins.ansible;
+
 import com.intellij.openapi.util.IconLoader.CachedImageIcon;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.PsiFile;
@@ -11,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.assertNotEquals;
 
 public class TestIcons extends BasePlatformTestCase {
     private static final String TEST_PATH;
@@ -35,7 +38,17 @@ public class TestIcons extends BasePlatformTestCase {
         if (icon instanceof DeferredIconImpl) {
             icon = ((DeferredIconImpl<?>) icon).retrieveIcon();
         }
-        assertSame(((CachedImageIcon) Icons.ANSIBLE_FILE).getOriginalPath(), ((CachedImageIcon) icon).getOriginalPath());
+        assertEquals(((CachedImageIcon) Icons.ANSIBLE_FILE).getOriginalPath(), ((CachedImageIcon) icon).getOriginalPath());
+    }
+
+    public void testNotAnsibleFile() {
+        PsiFile file = configureFileByTestName();
+        Icon icon = IconUtil.getIcon(file.getVirtualFile(), Iconable.ICON_FLAG_READ_STATUS, file.getProject());
+        if (icon instanceof DeferredIconImpl) {
+            icon = ((DeferredIconImpl<?>) icon).retrieveIcon();
+        }
+
+        assertNotEquals(((CachedImageIcon) Icons.ANSIBLE_FILE).getOriginalPath(), ((CachedImageIcon) icon).getOriginalPath());
     }
 
     private PsiFile configureFileByTestName() {

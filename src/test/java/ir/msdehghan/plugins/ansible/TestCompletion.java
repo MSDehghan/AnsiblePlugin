@@ -1,3 +1,5 @@
+package ir.msdehghan.plugins.ansible;
+
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;

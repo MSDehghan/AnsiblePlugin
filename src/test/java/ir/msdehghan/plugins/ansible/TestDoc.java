@@ -1,3 +1,5 @@
+package ir.msdehghan.plugins.ansible;
+
 import com.intellij.codeInsight.documentation.DocumentationManager;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.psi.PsiElement;
