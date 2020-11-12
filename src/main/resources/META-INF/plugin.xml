@@ -22,6 +22,7 @@
             <li>Suggest inventory variables</li>
             <li>Go to variable</li>
             <li>Go to play</li>
+            <li>Ansible FQCN support</li>
         </ul>
         </p>
     ]]>
@@ -29,6 +30,12 @@
 
     <change-notes>
         <![CDATA[
+        <h2>0.92</h2>
+        <ul>
+          <li>File path completion added wherever was needed(import_playbook, include_tasks, some module options,...).</li>
+          <li>Fix compatibility issues with 2020.3 EAP</li>
+          <li>Fix some typos in ansible docs and fields</li>
+        </ul>
         <h2>0.90</h2>
         <ul>
           <li>Finally roles are supported</li>

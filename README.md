@@ -18,6 +18,7 @@ Plugin that helps develop ansible files.
 * Suggest defined variables
 * Go to variable
 * Go to play
+* Ansible FQCN support
 
 ## Contribution
 To report bugs and feature requests you can create a Github issue. For code contribution you can create pull requests.
