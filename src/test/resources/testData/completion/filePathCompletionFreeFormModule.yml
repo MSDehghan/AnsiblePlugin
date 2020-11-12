@@ -1,0 +1,4 @@
+- name: Play1
+  hosts: a
+  tasks:
+    - include_tasks: <caret>

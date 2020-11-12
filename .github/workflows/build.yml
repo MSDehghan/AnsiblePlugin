@@ -32,6 +32,8 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build --info
+      env:
+        CI: true
 
     - name: Scan project using SonarQube
       run: ./gradlew sonarqube --info

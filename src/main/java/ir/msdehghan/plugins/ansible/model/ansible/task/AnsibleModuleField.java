@@ -8,8 +8,22 @@ import ir.msdehghan.plugins.ansible.AnsibleUtil;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AnsibleModuleField implements YamlField {
+
+    // These modules can be used in free-form format and should have auto-completion.
+    private static final Map<String, YamlType> FREE_FORM_MODULES;
+    static {
+        final HashMap<String, YamlType> freeFormMap = new HashMap<>();
+        freeFormMap.put("import_tasks", YamlTypes.YAML_FILE_PATH);
+        freeFormMap.put("include", YamlTypes.YAML_FILE_PATH);
+        freeFormMap.put("include_tasks", YamlTypes.YAML_FILE_PATH);
+        freeFormMap.put("include_vars", YamlTypes.YAML_FILE_PATH);
+        FREE_FORM_MODULES = freeFormMap;
+    }
+
     private final String name;
     private final AnsibleModuleType moduleType;
 
@@ -36,7 +50,7 @@ public class AnsibleModuleField implements YamlField {
             case MAPPING:
                 return moduleType;
             case SCALAR:
-                return YamlTypes.STRING;
+                return FREE_FORM_MODULES.getOrDefault(name, YamlTypes.STRING);
             case SEQUENCE:
             default:
                 return null;

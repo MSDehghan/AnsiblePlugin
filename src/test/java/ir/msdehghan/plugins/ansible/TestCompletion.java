@@ -1,6 +1,7 @@
 package ir.msdehghan.plugins.ansible;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,6 +67,28 @@ public class TestCompletion extends BasePlatformTestCase {
         List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile());
         assertNotEmpty(completionVariants);
         assertSameElements(completionVariants, "reloaded", "restarted", "started", "stopped");
+    }
+
+    public void testFilePathModuleField() {
+        List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile(),
+                "role/tasks/main.yml", "notAnsibleFile.yml");
+        assertNotNull("Lookup must be shown", LookupManager.getInstance(myFixture.getProject())
+                .getActiveLookup());
+        assertNotEmpty(completionVariants);
+        assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
+
+        myFixture.type("/");
+        myFixture.completeBasic();
+        assertNull("Lookup must not be shown", LookupManager.getInstance(myFixture.getProject())
+                .getActiveLookup());
+    }
+
+    public void testFilePathCompletionFreeFormModule() {
+        List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile(),
+                "role/tasks/main.yml", "notAnsibleFile.yml");
+        assertNotNull("Lookup must be shown", LookupManager.getInstance(myFixture.getProject()).getActiveLookup());
+        assertNotEmpty(completionVariants);
+        assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
     }
 
     public void testWrongPlace() {
