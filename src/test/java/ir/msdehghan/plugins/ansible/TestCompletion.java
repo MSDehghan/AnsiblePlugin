@@ -72,9 +72,15 @@ public class TestCompletion extends BasePlatformTestCase {
     public void testFilePathModuleField() {
         List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile(),
                 "role/tasks/main.yml", "notAnsibleFile.yml");
-        assertNotNull("Lookup must be shown", LookupManager.getInstance(myFixture.getProject()).getActiveLookup());
+        assertNotNull("Lookup must be shown", LookupManager.getInstance(myFixture.getProject())
+                .getActiveLookup());
         assertNotEmpty(completionVariants);
         assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
+
+        myFixture.type("/");
+        myFixture.completeBasic();
+        assertNull("Lookup must not be shown", LookupManager.getInstance(myFixture.getProject())
+                .getActiveLookup());
     }
 
     public void testFilePathCompletionFreeFormModule() {

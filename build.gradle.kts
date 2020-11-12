@@ -24,6 +24,8 @@ java {
 intellij {
     version = "2020.1.4"
     setPlugins("yaml")
+    // Instrument if we are not in CI. It will make coverage wrong in tests
+    instrumentCode = System.getenv("CI") == null
     updateSinceUntilBuild = false
 }
 
