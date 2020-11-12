@@ -38,10 +38,11 @@ public class AnsibleModuleOptionField implements YamlField {
         if (type == null) return YamlTypes.ANY;
         switch (type) {
             case "str":
-            case "path":
             case "raw":
             case "json":
                 return YamlTypes.STRING;
+            case "path":
+                return YamlTypes.PATH;
             case "int":
                 return YamlTypes.INTEGER;
             case "bool":

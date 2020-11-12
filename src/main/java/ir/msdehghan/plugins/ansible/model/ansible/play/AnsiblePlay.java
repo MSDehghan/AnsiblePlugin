@@ -46,7 +46,7 @@ public class AnsiblePlay extends YamlMappingType {
         addField("max_fail_percentage").setType(YamlTypes.STRING)
                 .setDescription("can be used to abort the run after a given percentage of hosts in the current batch has failed.");
 
-        addField("import_playbook").setType(YamlTypes.STRING)
+        addField("import_playbook").setType(YamlTypes.YAML_FILE_PATH)
                 .setDescription("Includes a file with a list of plays to be executed");
 
         addField("order").setType(YamlTypes.STRING)
@@ -71,8 +71,8 @@ public class AnsiblePlay extends YamlMappingType {
                 .setDescription("Allows you to choose the connection plugin to use for the play.");
 
         addField("vars_files")
-                .setType(YamlTypes.STRING)
-                .setType(SEQUENCE, YamlTypes.STRING)
+                .setType(YamlTypes.YAML_FILE_PATH)
+                .setType(SEQUENCE, YamlTypes.YAML_FILE_PATH)
                 .setDescription("List of files that contain vars to include in the play.");
 
         addField("vars_prompt").setType(MAPPING, new VarsPrompt())
