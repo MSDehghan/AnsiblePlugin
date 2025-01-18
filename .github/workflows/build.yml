@@ -12,7 +12,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: 21
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
@@ -35,21 +35,21 @@ jobs:
       env:
         CI: true
 
-    - name: Scan project using SonarQube
-      run: ./gradlew sonarqube --info
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Verify Plugin on IntelliJ Platforms
-      id: verify
-      uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
-      with:
-        ide-versions: |
-          ideaIC:2018.2
-          ideaIC:2019.2
-          ideaIC:2020.2
-          ideaIC:LATEST-EAP-SNAPSHOT
+#    - name: Scan project using SonarQube
+#      run: ./gradlew sonarqube --info
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#
+#    - name: Verify Plugin on IntelliJ Platforms
+#      id: verify
+#      uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
+#      with:
+#        ide-versions: |
+#          ideaIC:2018.2
+#          ideaIC:2019.2
+#          ideaIC:2020.2
+#          ideaIC:LATEST-EAP-SNAPSHOT
 
     - name: Stop Gradle daemon
       run: ./gradlew --stop

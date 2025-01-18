@@ -1,8 +1,10 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     java
     jacoco
-    id("org.sonarqube") version "3.0"
-    id("org.jetbrains.intellij") version "0.5.0"
+    alias(libs.plugins.intelliJPlatform)
+    alias(libs.plugins.sonarqube)
 }
 
 group = "ir.msdehghan"
@@ -10,24 +12,38 @@ version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.2")
+    testImplementation(libs.junit)
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3") // TODO: after finding the problem with 243 version we should set to 242
+        bundledPlugins("org.jetbrains.plugins.yaml")
+        testFramework(TestFrameworkType.Platform)
+    }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
-intellij {
-    version = "2020.1.4"
-    setPlugins("yaml")
-    // Instrument if we are not in CI. It will make coverage wrong in tests
-    instrumentCode = System.getenv("CI") == null
-    updateSinceUntilBuild = false
+intellijPlatform {
+    pluginConfiguration {
+        intellijPlatform {
+            buildSearchableOptions = false
+        }
+
+        ideaVersion {
+            sinceBuild = "243"
+            untilBuild = ""
+        }
+    }
 }
+
 
 sonarqube {
     properties {
@@ -37,15 +53,12 @@ sonarqube {
     }
 }
 
-tasks{
+tasks {
     sonarqube.get().dependsOn(jacocoTestReport)
     jacocoTestReport {
         dependsOn(test)
         reports {
-            xml.isEnabled = true
+            xml.required.set(true)
         }
-    }
-    buildSearchableOptions {
-        enabled = false
     }
 }

@@ -2,7 +2,7 @@
   hosts: h1
   tasks:
     - copy:
-        - asd<caret>asd: asd
+        - asda<caret>sd: asd
 
 - name: Play2
   hosts: h2
