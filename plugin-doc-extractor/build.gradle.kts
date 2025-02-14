@@ -7,7 +7,7 @@ repositories{
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.2")
+    implementation(libs.jakson)
 }
 
 

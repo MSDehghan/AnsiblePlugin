@@ -60,7 +60,6 @@
         ]]>
     </change-notes>
 
-    <idea-version since-build="182" />
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
 

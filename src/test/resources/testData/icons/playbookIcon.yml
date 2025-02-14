@@ -1,8 +1,0 @@
-- name: Play1
-  hosts: h1
-  tasks:
-    - copy:
-        dest:
-
-- name: Play2
-  hosts: h2
