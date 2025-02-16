@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 jobs:
@@ -23,10 +23,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-#    - uses: actions/cache@v4
-#      with:
-#        path: ~/.sonar/cache
-#        key: ${{ runner.os }}-sonar
+    - name: Cache SonarQube packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
 
 
     - name: Build with Gradle
@@ -34,11 +36,10 @@ jobs:
       env:
         CI: true
 
-#    - name: Scan project using SonarQube
-#      run: ./gradlew sonarqube --info
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Scan project using SonarQube
+      run: ./gradlew sonar --info
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #
 #    - name: Verify Plugin on IntelliJ Platforms
 #      id: verify
