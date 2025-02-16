@@ -44,21 +44,20 @@ intellijPlatform {
     }
 }
 
-
-sonarqube {
+sonar {
     properties {
-        properties["sonar.projectKey"] = "MSDehghan_AnsiblePlugin"
-        properties["sonar.organization"] = "msdehghan-github"
-        properties["sonar.host.url"] = "https://sonarcloud.io"
+        property("sonar.projectKey", "MSDehghan_AnsiblePlugin")
+        property("sonar.organization", "msdehghan")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }
 
 tasks {
-    sonarqube.get().dependsOn(jacocoTestReport)
     jacocoTestReport {
         dependsOn(test)
         reports {
             xml.required.set(true)
         }
     }
+    sonar.get().dependsOn(jacocoTestReport)
 }
