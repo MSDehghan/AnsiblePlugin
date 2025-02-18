@@ -20,8 +20,8 @@ repositories {
 dependencies {
     testImplementation(libs.junit)
     intellijPlatform {
-        intellijIdeaCommunity("2024.3") // TODO: after finding the problem with 243 version we should set to 242
-        bundledPlugins("org.jetbrains.plugins.yaml")
+        intellijIdeaCommunity("2024.3")
+        bundledPlugins("org.jetbrains.plugins.yaml", "com.intellij.modules.json")
         testFramework(TestFrameworkType.Platform)
     }
 }
