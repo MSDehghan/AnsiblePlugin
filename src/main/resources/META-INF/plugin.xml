@@ -62,6 +62,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
+    <depends>com.intellij.modules.json</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor language="yaml" implementationClass="ir.msdehghan.plugins.ansible.AnsibleCompletionContributor"/>
