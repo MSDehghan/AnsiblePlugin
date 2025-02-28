@@ -5,7 +5,7 @@ junit = "4.13.2"
 
 # plugins
 sonarqube = "6.0.1.5171"
-intelliJPlatform = "2.2.1"
+intelliJPlatform = "2.3.0"
 
 [libraries]
 jakson = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
