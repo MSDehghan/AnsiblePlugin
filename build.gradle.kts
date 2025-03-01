@@ -1,4 +1,6 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     java
@@ -33,13 +35,17 @@ java {
 
 intellijPlatform {
     pluginConfiguration {
-        intellijPlatform {
-            buildSearchableOptions = false
-        }
-
         ideaVersion {
             sinceBuild = "243"
-            untilBuild = ""
+        }
+
+        intellijPlatform {
+            buildSearchableOptions = false
+            pluginVerification {
+                ides {
+                    recommended()
+                }
+            }
         }
     }
 }
