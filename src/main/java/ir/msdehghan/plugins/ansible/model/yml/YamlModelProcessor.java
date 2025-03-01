@@ -28,8 +28,7 @@ public abstract class YamlModelProcessor {
             ElementSchemaInfo seqParent = locate(parent.getParent());
             if (seqParent == null) return null;
             return ElementSchemaInfo.createOrNull(seqParent.getField(), YamlField.Relation.SEQUENCE);
-        } else if (parent instanceof YAMLKeyValue) {
-            YAMLKeyValue keyValue = (YAMLKeyValue) parent;
+        } else if (parent instanceof YAMLKeyValue keyValue) {
             ElementSchemaInfo parentField = locate(keyValue.getParent());
             if (parentField == null) return null;
             MappingType parentType = ObjectUtils.tryCast(parentField.getType(), MappingType.class);

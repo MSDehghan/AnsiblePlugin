@@ -1,6 +1,6 @@
 package ir.msdehghan.plugins.ansible;
 
-import com.intellij.lang.documentation.AbstractDocumentationProvider;
+import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.light.LightElement;
@@ -15,13 +15,12 @@ import java.util.Optional;
 
 import static ir.msdehghan.plugins.ansible.AnsibleModels.MODEL_PROCESSOR;
 
-public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
+public class AnsiblePlayDocProvider implements DocumentationProvider {
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-        if (element instanceof DocPsi) {
-            return ((DocPsi) element).field.generateDoc();
-        } else if (element instanceof YAMLKeyValue){
-            YAMLKeyValue keyValue = (YAMLKeyValue) element;
+        if (element instanceof DocPsi docPsi) {
+            return docPsi.field.generateDoc();
+        } else if (element instanceof YAMLKeyValue keyValue){
             YamlModelProcessor.ElementSchemaInfo schemaInfo = MODEL_PROCESSOR.locate(keyValue);
             if (schemaInfo == null || schemaInfo.getType() == null || !(schemaInfo.getType() instanceof MappingType)) {
                 return null;
@@ -34,8 +33,8 @@ public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
 
     @Override
     public @Nullable PsiElement getDocumentationElementForLookupItem(PsiManager psiManager, Object object, PsiElement element) {
-        if (object instanceof YamlField) {
-            return new DocPsi(psiManager, (YamlField) object);
+        if (object instanceof YamlField field) {
+            return new DocPsi(psiManager, field);
         }
         return null;
     }
@@ -49,8 +48,13 @@ public class AnsiblePlayDocProvider extends AbstractDocumentationProvider {
         }
 
         @Override
+        public String getText() {
+            return this.toString();
+        }
+
+        @Override
         public String toString() {
-            return "DocPsi";
+            return "DocPsi: " + this.field.getName();
         }
     }
 }
