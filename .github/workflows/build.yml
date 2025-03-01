@@ -40,16 +40,9 @@ jobs:
       run: ./gradlew sonar --info
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#
-#    - name: Verify Plugin on IntelliJ Platforms
-#      id: verify
-#      uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
-#      with:
-#        ide-versions: |
-#          ideaIC:2018.2
-#          ideaIC:2019.2
-#          ideaIC:2020.2
-#          ideaIC:LATEST-EAP-SNAPSHOT
+
+    - name: Verify Plugin on IntelliJ Platforms
+      run: ./gradlew verifyPlugin --info
 
     - name: Stop Gradle daemon
       run: ./gradlew --stop
