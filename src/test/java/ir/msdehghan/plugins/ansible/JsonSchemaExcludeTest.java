@@ -1,10 +1,8 @@
 package ir.msdehghan.plugins.ansible;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import junit.framework.TestCase;
 import org.jetbrains.yaml.YAMLLanguage;
 
 import java.net.URISyntaxException;

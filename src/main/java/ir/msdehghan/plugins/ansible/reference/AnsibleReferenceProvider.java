@@ -12,7 +12,6 @@ import org.jetbrains.yaml.psi.YAMLScalar;
 import java.util.Objects;
 
 import static ir.msdehghan.plugins.ansible.AnsibleModels.MODEL_PROCESSOR;
-import static org.apache.commons.lang3.Validate.isInstanceOf;
 
 public class AnsibleReferenceProvider extends PsiReferenceProvider {
     @Override

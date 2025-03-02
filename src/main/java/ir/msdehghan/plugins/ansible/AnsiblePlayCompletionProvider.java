@@ -44,8 +44,7 @@ public class AnsiblePlayCompletionProvider extends CompletionProvider<Completion
 
     private Set<String> getMappingSiblings(PsiElement element) {
         PsiElement parent = element.getParent();
-        if (parent.getParent() instanceof YAMLMapping) {
-            YAMLMapping mapping = (YAMLMapping) parent.getParent();
+        if (parent.getParent() instanceof YAMLMapping mapping) {
             return mapping.getKeyValues().stream().map(k -> k.getKeyText().trim()).collect(Collectors.toSet());
         }
         return Collections.emptySet();

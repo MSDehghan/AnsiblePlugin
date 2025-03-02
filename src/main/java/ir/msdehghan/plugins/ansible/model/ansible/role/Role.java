@@ -13,7 +13,6 @@ import org.jetbrains.yaml.psi.YAMLScalar;
 import java.util.Collection;
 
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
-import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.getTaggableGroup;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 

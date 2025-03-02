@@ -13,7 +13,7 @@ public class PrintJsonDocSchema {
 
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new JsonMapper();
-        Map<String, Map<String, Object>> map = mapper.readValue(PrintJsonDocSchema.class.getResource("/plugins.json"), new TypeReference<Map<String, Map<String, Object>>>() {
+        Map<String, Map<String, Object>> map = mapper.readValue(PrintJsonDocSchema.class.getResource("/plugins.json"), new TypeReference<>() {
         });
 
         for (Map<String, Object> plugin : map.values()) {

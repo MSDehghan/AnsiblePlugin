@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
@@ -23,11 +22,11 @@ public class ExtractDoc {
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new JsonMapper();
         Map<String, AnsibleModule> map = mapper.readValue(ExtractDoc.class.getResource("/plugins.json"),
-                new TypeReference<Map<String, AnsibleModule>>() {
+                new TypeReference<>() {
                 });
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         Files.createDirectories(Paths.get("./docs"));
-        for (AnsibleModuleDto value : map.values().stream().map(ExtractDoc::convert).collect(Collectors.toList())) {
+        for (AnsibleModuleDto value : map.values().stream().map(ExtractDoc::convert).toList()) {
             Files.write(Paths.get("./docs", value.name + ".json"), mapper.writeValueAsBytes(value), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         }
 
@@ -110,7 +109,7 @@ class AnsibleModule {
 
         @JsonSetter("status")
         public void setStatus(List<String> o) {
-            this.status = o.get(0);
+            this.status = o.getFirst();
         }
 
         @Override

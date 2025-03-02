@@ -23,7 +23,7 @@ public class AnsibleCompletionContributor extends CompletionContributor {
                         TokenSet.create(YAMLElementTypes.SCALAR_PLAIN_VALUE, YAMLElementTypes.SCALAR_QUOTED_STRING)
                 )
         );
-        return PlatformPatterns.psiElement().andOr(inserted, updatedKey).with(new PatternCondition<PsiElement>("In Ansible") {
+        return PlatformPatterns.psiElement().andOr(inserted, updatedKey).with(new PatternCondition<>("In Ansible") {
             @Override
             public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext context) {
                 return AnsibleUtil.isInAnsibleFile(psiElement);
