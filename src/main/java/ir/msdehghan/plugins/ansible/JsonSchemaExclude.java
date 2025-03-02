@@ -39,7 +39,7 @@ public class JsonSchemaExclude implements JsonSchemaCatalogExclusion {
         }
         if (!(psiFile instanceof YAMLFile)) return false;
         List<YAMLDocument> yamlDocuments = ((YAMLFile) psiFile).getDocuments();
-        return !yamlDocuments.isEmpty() && yamlDocuments.get(0).getTopLevelValue() instanceof YAMLSequence;
+        return !yamlDocuments.isEmpty() && yamlDocuments.getFirst().getTopLevelValue() instanceof YAMLSequence;
     }
 
     @Nullable

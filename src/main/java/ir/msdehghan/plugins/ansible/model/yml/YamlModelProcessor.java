@@ -7,10 +7,15 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.MappingType;
 import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLTokenTypes;
-import org.jetbrains.yaml.psi.*;
+import org.jetbrains.yaml.psi.YAMLDocument;
+import org.jetbrains.yaml.psi.YAMLFile;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.YAMLScalar;
+import org.jetbrains.yaml.psi.YAMLSequence;
+import org.jetbrains.yaml.psi.YAMLSequenceItem;
+import org.jetbrains.yaml.psi.YAMLValue;
 
 public abstract class YamlModelProcessor {
     protected abstract YamlField getRootField(YAMLDocument document);
@@ -27,7 +32,7 @@ public abstract class YamlModelProcessor {
         } else if (parent instanceof YAMLSequenceItem) {
             ElementSchemaInfo seqParent = locate(parent.getParent());
             if (seqParent == null) return null;
-            return ElementSchemaInfo.createOrNull(seqParent.getField(), YamlField.Relation.SEQUENCE);
+            return ElementSchemaInfo.createOrNull(seqParent.field(), YamlField.Relation.SEQUENCE);
         } else if (parent instanceof YAMLKeyValue keyValue) {
             ElementSchemaInfo parentField = locate(keyValue.getParent());
             if (parentField == null) return null;
@@ -64,40 +69,22 @@ public abstract class YamlModelProcessor {
         return beforeSibling != null && beforeSibling.getNode().getElementType() == YAMLTokenTypes.SCALAR_KEY;
     }
 
-    public static class ElementSchemaInfo {
-        private final YamlField field;
-        private final Relation relation;
+    public record ElementSchemaInfo(YamlField field, Relation relation) {
+            public YamlType getType() {
+                return field.getType(relation);
+            }
 
-        @NotNull
-        public YamlField getField() {
-            return field;
-        }
+            public static ElementSchemaInfo createOrNull(YamlField field, Relation relation) {
+                return field == null ? null : new ElementSchemaInfo(field, relation);
+            }
 
-        @NotNull
-        public Relation getRelation() {
-            return relation;
+            @Override
+            public String toString() {
+                return "FieldAndValueRelation{" +
+                        "field=" + field.getName() +
+                        ", relation=" + relation +
+                        ", type=" + getType() +
+                        '}';
+            }
         }
-
-        public YamlType getType() {
-            return field.getType(relation);
-        }
-
-        public ElementSchemaInfo(@NotNull YamlField field,@NotNull Relation relation) {
-            this.field = field;
-            this.relation = relation;
-        }
-
-        public static ElementSchemaInfo createOrNull(YamlField field, Relation relation) {
-            return field == null ? null : new ElementSchemaInfo(field, relation);
-        }
-
-        @Override
-        public String toString() {
-            return "FieldAndValueRelation{" +
-                    "field=" + field.getName() +
-                    ", relation=" + relation +
-                    ", type=" + getType() +
-                    '}';
-        }
-    }
 }

@@ -36,34 +36,23 @@ public class AnsibleModuleOptionField implements YamlField {
 
     private YamlType getTypeFor(String type) {
         if (type == null) return YamlTypes.ANY;
-        switch (type) {
-            case "str":
-            case "raw":
-            case "json":
-                return YamlTypes.STRING;
-            case "path":
-                return YamlTypes.PATH;
-            case "int":
-                return YamlTypes.INTEGER;
-            case "bool":
-                return YamlTypes.BOOLEAN;
-            case "float":
-                return YamlTypes.FLOAT;
-            default:
-                return YamlTypes.ANY;
-        }
+        return switch (type) {
+            case "str", "raw", "json" -> YamlTypes.STRING;
+            case "path" -> YamlTypes.PATH;
+            case "int" -> YamlTypes.INTEGER;
+            case "bool" -> YamlTypes.BOOLEAN;
+            case "float" -> YamlTypes.FLOAT;
+            default -> YamlTypes.ANY;
+        };
     }
 
     private Relation computeRelation() {
         if (field.type == null) return Relation.SCALAR;
-        switch (field.type) {
-            case "dict":
-                return Relation.MAPPING;
-            case "list":
-                return Relation.SEQUENCE;
-            default:
-                return Relation.SCALAR;
-        }
+        return switch (field.type) {
+            case "dict" -> Relation.MAPPING;
+            case "list" -> Relation.SEQUENCE;
+            default -> Relation.SCALAR;
+        };
     }
 
     @Override

@@ -25,6 +25,10 @@ class AnsibleModuleType extends YamlType implements MappingType {
         super(name);
     }
 
+    private static YamlField convertToYamlField(Map.Entry<String, AnsibleModuleDto.Field> field) {
+        return new AnsibleModuleOptionField(field.getKey(), field.getValue());
+    }
+
     public AnsibleModuleDto getModuleDto() {
         ensureLoaded();
         return moduleDto;
@@ -55,10 +59,6 @@ class AnsibleModuleType extends YamlType implements MappingType {
         }
     }
 
-    private static YamlField convertToYamlField(Map.Entry<String, AnsibleModuleDto.Field> field) {
-        return new AnsibleModuleOptionField(field.getKey(), field.getValue());
-    }
-
     @Override
     public List<YamlField> getFields() {
         ensureLoaded();
@@ -68,6 +68,9 @@ class AnsibleModuleType extends YamlType implements MappingType {
     @Override
     public Optional<YamlField> getFieldByName(String name) {
         ensureLoaded();
-        return fields.stream().filter(field -> field.getName().equals(name)).findAny();
+        if (fields != null) {
+            return fields.stream().filter(field -> field.getName().equals(name)).findAny();
+        }
+        return Optional.empty();
     }
 }

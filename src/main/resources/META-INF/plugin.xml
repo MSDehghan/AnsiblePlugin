@@ -15,47 +15,18 @@
         Any type of contribution is <b>highly</b> appreciated. <br/>
         <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub link</a>
         <br/>
-        <br/>
-        We are actively developing new features. Some of them are listed below:
-        <h3>Features in progress:</h3>
-        <ul>
-            <li>Suggest inventory variables</li>
-            <li>Go to variable</li>
-            <li>Go to play</li>
-            <li>Ansible FQCN support</li>
-        </ul>
         </p>
     ]]>
     </description>
 
     <change-notes>
         <![CDATA[
-        <h2>0.92</h2>
+        <h2>1.0</h2>
         <ul>
-          <li>File path completion added wherever was needed(import_playbook, include_tasks, some module options,...).</li>
-          <li>Fix compatibility issues with 2020.3 EAP</li>
-          <li>Fix some typos in ansible docs and fields</li>
-        </ul>
-        <h2>0.90</h2>
-        <ul>
-          <li>Finally roles are supported</li>
-          <li>Plugin detect available roles and suggest role names</li>
-          <li>Add some missing fields and documentations</li>
-        </ul>
-        <h2>0.12</h2>
-        <ul>
-          <li>Fix NPE in yaml sequences</li>
-          <li>Support block,always and rescue fields</li>
-          <li>Fix not showing help in some cases</li>
-          <li>Many small improvements to code</li>
-        </ul>
-        <h2>0.11</h2>
-        <ul>
-          <li>Add ansible playbooks file icon</li>
-        </ul>
-        <h2>0.1</h2>
-        <ul>
-          <li>Initial release of plugin</li>
+          <li>Fix compatibility issues with 2024.3+ IDEs</li>
+          <li>Fix NPE on rare cases</li>
+          <li>Upgrade Intellij platform plugin to version 2</li>
+          <li>Upgrade plugin Java version to 21</li>
         </ul>
         ]]>
     </change-notes>

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
-import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.getTaggableGroup;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.MAPPING;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.SEQUENCE;
 
