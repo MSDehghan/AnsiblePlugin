@@ -11,9 +11,10 @@
         Not only Ansible modules are recognized but also all of them have full documentation, right in your IDE.
         </p>
         <br/>
-        To report bugs and feature requests you can create a Github issue. For code contribution you can create pull requests.<br/>
-        Any type of contribution is <b>highly</b> appreciated. <br/>
-        <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub link</a>
+        To report bugs and feature requests you can create a GitHub issue. For code contribution you can create pull requests.<br/>
+        Any type of contribution is <b>highly</b> appreciated. <br/><br/>
+
+        You can support this plugin by starring the <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub repository</a>.
         <br/>
         </p>
     ]]>
@@ -28,6 +29,7 @@
           <li>Upgrade Intellij platform plugin to version 2</li>
           <li>Upgrade plugin Java version to 21</li>
         </ul>
+        You can support the plugin by starring the <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub</a> repository.
         ]]>
     </change-notes>
 
