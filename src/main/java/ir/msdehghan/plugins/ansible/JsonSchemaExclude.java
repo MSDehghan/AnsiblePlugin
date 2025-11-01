@@ -16,6 +16,7 @@ import org.jetbrains.yaml.YAMLFileType;
 import org.jetbrains.yaml.psi.YAMLDocument;
 import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLSequence;
+import org.jetbrains.yaml.psi.YAMLValue;
 
 import java.util.List;
 
@@ -39,7 +40,12 @@ public class JsonSchemaExclude implements JsonSchemaCatalogExclusion {
         }
         if (!(psiFile instanceof YAMLFile)) return false;
         List<YAMLDocument> yamlDocuments = ((YAMLFile) psiFile).getDocuments();
-        return !yamlDocuments.isEmpty() && yamlDocuments.getFirst().getTopLevelValue() instanceof YAMLSequence;
+        if (yamlDocuments.isEmpty()) {
+            return false;
+        }
+        YAMLDocument firstDocument = yamlDocuments.getFirst();
+        YAMLValue topLevelValue = firstDocument != null ? firstDocument.getTopLevelValue() : null;
+        return topLevelValue instanceof YAMLSequence;
     }
 
     @Nullable

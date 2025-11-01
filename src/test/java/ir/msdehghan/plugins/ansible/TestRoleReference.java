@@ -57,6 +57,19 @@ public class TestRoleReference extends BasePlatformTestCase {
         assertSame(reference.getElement(), reference.bindToElement(roleDirectory.getParent()));
     }
 
+    public void testRoleNameResolveWithSpecialChars() {
+        VirtualFile root = myFixture.copyDirectoryToProject("/", "/");
+        myFixture.configureFromExistingVirtualFile(Objects.requireNonNull(root.findFileByRelativePath("special-play.yml")));
+
+        PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+        assertEquals("my.role", reference.getCanonicalText());
+
+        PsiDirectory roleDirectory = PsiManager.getInstance(myFixture.getProject())
+                .findDirectory(root.findFileByRelativePath("roles/my.role"));
+        assertNotNull(roleDirectory);
+        assertTrue(reference.isReferenceTo(roleDirectory));
+    }
+
     @Override
     protected boolean shouldContainTempFiles() {
         return false;

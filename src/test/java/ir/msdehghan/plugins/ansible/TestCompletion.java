@@ -102,6 +102,12 @@ public class TestCompletion extends BasePlatformTestCase {
         assertContainsElements(completionVariants, "name", "state");
     }
 
+    public void testEmptyFile() {
+        myFixture.configureByText("empty.yml", "");
+        LookupElement[] completion = myFixture.completeBasic();
+        assertTrue(completion == null || completion.length == 0);
+    }
+
     private void configureFileByTestName() {
         myFixture.configureByFile(getTestDataFile());
     }
