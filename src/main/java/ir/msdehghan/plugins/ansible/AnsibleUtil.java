@@ -19,8 +19,11 @@ public class AnsibleUtil {
     }
 
     public static boolean isInAnsibleFile(PsiElement element) {
-        if (element == null || !(element.getContainingFile() instanceof YAMLFile)) return false;
-        YAMLValue topLevelValue = ((YAMLFile) element.getContainingFile()).getDocuments().getFirst().getTopLevelValue();
+        if (element == null || !(element.getContainingFile() instanceof YAMLFile yamlFile)) return false;
+        var documents = yamlFile.getDocuments();
+        if (documents.isEmpty()) return false;
+
+        YAMLValue topLevelValue = documents.getFirst().getTopLevelValue();
         return topLevelValue instanceof YAMLSequence;
     }
 

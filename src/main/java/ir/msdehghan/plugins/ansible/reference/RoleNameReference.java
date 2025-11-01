@@ -34,7 +34,8 @@ public class RoleNameReference extends PsiReferenceBase.Poly<YAMLScalar> {
 
     @Override
     public @NotNull ResolveResult[] multiResolve(boolean incompleteCode) {
-        final Pattern rolePattern = Pattern.compile(ROLE_PATH_STRING.replace("[name]", getValue()));
+        final String roleName = getValue();
+        final Pattern rolePattern = Pattern.compile(ROLE_PATH_STRING.replace("[name]", Pattern.quote(roleName)));
 
         Collection<VirtualFile> yamlFiles = FileTypeIndex.getFiles(YAMLFileType.YML,
                 GlobalSearchScope.projectScope(myElement.getProject()));

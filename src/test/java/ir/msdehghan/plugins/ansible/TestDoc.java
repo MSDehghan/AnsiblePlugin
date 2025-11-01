@@ -34,6 +34,7 @@ public class TestDoc extends BasePlatformTestCase {
         assertTrue(doc.contains("Deprecated"));
         assertTrue(doc.contains("Removed in"));
         assertTrue(doc.contains("Added in"));
+        assertTrue(doc.contains("Use M(digital_ocean_droplet) instead."));
     }
 
     public void testModuleLookupDoc() {

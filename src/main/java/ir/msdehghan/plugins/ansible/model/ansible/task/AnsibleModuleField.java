@@ -70,7 +70,7 @@ public class AnsibleModuleField implements YamlField {
             sb.append(DocumentationMarkup.SECTIONS_START);
             AnsibleUtil.appendSection("Why", moduleDto.deprecated.why, sb);
             AnsibleUtil.appendSection("Removed in", moduleDto.deprecated.removedIn, sb);
-            AnsibleUtil.appendSection("Alternative", moduleDto.description, sb);
+            AnsibleUtil.appendSection("Alternative", moduleDto.deprecated.alternative, sb);
             sb.append(DocumentationMarkup.SECTIONS_END);
             sb.append("<hr/>");
         }
