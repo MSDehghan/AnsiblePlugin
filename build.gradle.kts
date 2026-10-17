@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ir.msdehghan"
-version = "1.0.0"
+version = providers.gradleProperty("pluginVersion").get()
 
 repositories {
     mavenCentral()
@@ -18,33 +18,42 @@ repositories {
 }
 
 dependencies {
+    // The IDE's own Jackson lives in internal platform modules that plugins can't depend on, so bundle it.
+    implementation(libs.jackson.databind)
     testImplementation(libs.junit)
+    testImplementation(libs.opentest4j)
     intellijPlatform {
-        intellijIdeaCommunity("2024.3")
+        intellijIdea(providers.gradleProperty("platformVersion"))
         bundledPlugins("org.jetbrains.plugins.yaml", "com.intellij.modules.json")
         testFramework(TestFrameworkType.Platform)
+        // Workaround for https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/2261
+        testBundledPlugins("com.intellij.modules.ultimate")
     }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(providers.gradleProperty("javaVersion").get())
+    }
 }
 
 intellijPlatform {
-    pluginConfiguration {
-        ideaVersion {
-            sinceBuild = "243"
-        }
+    buildSearchableOptions = false
 
-        intellijPlatform {
-            buildSearchableOptions = false
-            pluginVerification {
-                ides {
-                    recommended()
-                }
-            }
+    pluginConfiguration {
+        version = providers.gradleProperty("pluginVersion")
+        ideaVersion {
+            sinceBuild = providers.gradleProperty("pluginSinceBuild")
         }
+    }
+
+    pluginVerification {
+        ides {
+            // Locally verify only against the IDE we build with; CI checks the recommended set.
+            if (providers.environmentVariable("CI").isPresent) recommended() else current()
+        }
+        // The unified 2026.x layout lists some jars that don't exist on disk; don't warn about each one.
+        freeArgs = listOf("-missing-layout-classpath-file", "skip-silently")
     }
 }
 
@@ -63,5 +72,7 @@ tasks {
             xml.required.set(true)
         }
     }
-    sonar.get().dependsOn(jacocoTestReport)
+    named("sonar") {
+        dependsOn(jacocoTestReport)
+    }
 }
