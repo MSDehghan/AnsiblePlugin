@@ -28,7 +28,6 @@
           <li>Upgrade Gradle, IntelliJ Platform Gradle Plugin and other build tools to their latest versions</li>
           <li>Bundle Jackson instead of relying on the IDE's internal copy</li>
           <li>Fix an error on empty YAML files</li>
-          <li>Stop overriding the YAML file type for main.yml and *playbook.yml files</li>
         </ul>
         <h2>1.0</h2>
         <ul>
@@ -50,6 +49,7 @@
         <psi.referenceContributor language="yaml" implementation="ir.msdehghan.plugins.ansible.reference.AnsibleReferenceContributor" />
         <lang.documentationProvider implementationClass="ir.msdehghan.plugins.ansible.AnsiblePlayDocProvider" language="yaml"/>
         <fileIconProvider implementation="ir.msdehghan.plugins.ansible.icon.AnsibleFileIconProvider" />
+        <fileType name="YAML" patterns="*playbook.yml;*playbook.yaml" fileNames="main.yml;main.yaml" />
         <json.catalog.exclusion implementation="ir.msdehghan.plugins.ansible.JsonSchemaExclude" />
     </extensions>
 </idea-plugin>

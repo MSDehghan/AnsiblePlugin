@@ -12,8 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
 
     - name: Set up JDK
       uses: actions/setup-java@v6
@@ -24,20 +22,8 @@ jobs:
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v6
 
-    - name: Cache SonarQube packages
-      uses: actions/cache@v6
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
     - name: Build with Gradle
       run: ./gradlew build
-
-    - name: Scan project using SonarQube
-      run: ./gradlew sonar
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Verify Plugin on IntelliJ Platforms
       run: ./gradlew verifyPlugin
