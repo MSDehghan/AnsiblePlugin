@@ -91,6 +91,11 @@ public class TestCompletion extends BasePlatformTestCase {
         assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
     }
 
+    public void testEmptyFile() {
+        myFixture.configureByText("empty.yml", "<caret>");
+        assertEquals(0, myFixture.completeBasic().length);
+    }
+
     public void testWrongPlace() {
         configureFileByTestName();
         assertEquals(0, myFixture.completeBasic().length);

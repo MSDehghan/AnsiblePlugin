@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.psi.*;
 
 import javax.swing.*;
+import java.util.List;
 
 public class AnsibleUtil {
     private AnsibleUtil() {
@@ -19,8 +20,10 @@ public class AnsibleUtil {
     }
 
     public static boolean isInAnsibleFile(PsiElement element) {
-        if (element == null || !(element.getContainingFile() instanceof YAMLFile)) return false;
-        YAMLValue topLevelValue = ((YAMLFile) element.getContainingFile()).getDocuments().getFirst().getTopLevelValue();
+        if (element == null || !(element.getContainingFile() instanceof YAMLFile yamlFile)) return false;
+        List<YAMLDocument> documents = yamlFile.getDocuments();
+        if (documents.isEmpty()) return false;
+        YAMLValue topLevelValue = documents.getFirst().getTopLevelValue();
         return topLevelValue instanceof YAMLSequence;
     }
 

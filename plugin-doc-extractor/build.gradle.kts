@@ -7,7 +7,13 @@ repositories{
 }
 
 dependencies {
-    implementation(libs.jakson)
+    implementation(libs.jackson.databind)
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(providers.gradleProperty("javaVersion").get())
+    }
 }
 
 

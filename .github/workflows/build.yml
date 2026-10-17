@@ -11,38 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Set up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v6
       with:
-        java-version: 21
+        java-version: 25
         distribution: jetbrains
-        cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Cache SonarQube packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v6
 
     - name: Build with Gradle
       run: ./gradlew build --info
-      env:
-        CI: true
-
-    - name: Scan project using SonarQube
-      run: ./gradlew sonar --info
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Verify Plugin on IntelliJ Platforms
       run: ./gradlew verifyPlugin --info
-
-    - name: Stop Gradle daemon
-      run: ./gradlew --stop

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>ir.msdehghan.plugins.ansible</id>
     <name>Ansible</name>
-    <vendor>MSDehghan</vendor>
+    <vendor url="https://github.com/MSDehghan">MSDehghan</vendor>
 
     <description>
         <![CDATA[
@@ -10,18 +10,25 @@
         This plugin can auto-complete all play and task fields. <br/>
         Not only Ansible modules are recognized but also all of them have full documentation, right in your IDE.
         </p>
-        <br/>
+        <p>
         To report bugs and feature requests you can create a GitHub issue. For code contribution you can create pull requests.<br/>
-        Any type of contribution is <b>highly</b> appreciated. <br/><br/>
-
+        Any type of contribution is <b>highly</b> appreciated.
+        </p>
+        <p>
         You can support this plugin by starring the <a href="https://github.com/MSDehghan/AnsiblePlugin">GitHub repository</a>.
-        <br/>
         </p>
     ]]>
     </description>
 
     <change-notes>
         <![CDATA[
+        <h2>1.1.0</h2>
+        <ul>
+          <li>Require IntelliJ Platform 2026.2+ and Java 25</li>
+          <li>Upgrade Gradle, IntelliJ Platform Gradle Plugin and other build tools to their latest versions</li>
+          <li>Bundle Jackson instead of relying on the IDE's internal copy</li>
+          <li>Fix an error on empty YAML files</li>
+        </ul>
         <h2>1.0</h2>
         <ul>
           <li>Fix compatibility issues with 2024.3+ IDEs</li>
