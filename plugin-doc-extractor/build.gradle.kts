@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass = "ExtractDoc"
+    mainClass = "ir.msdehghan.plugins.ansible.extractor.ExtractDoc"
 }
 
 repositories{

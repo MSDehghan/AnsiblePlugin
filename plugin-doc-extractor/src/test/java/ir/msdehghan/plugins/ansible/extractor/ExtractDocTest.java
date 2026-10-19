@@ -1,3 +1,5 @@
+package ir.msdehghan.plugins.ansible.extractor;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -119,6 +121,41 @@ public class ExtractDocTest {
         assertEquals("copy", mapper.readTree(output.resolve("copy.json").toFile()).path("name").asText());
         assertTrue(Files.exists(output.resolve("ansible.builtin.copy.json")));
         assertFalse(Files.exists(output.resolve("import_playbook.json")));
+    }
+
+    @Test
+    public void handlesLongMarkupAndEscapedContent() {
+        String content = "x".repeat(50_000);
+        assertEquals("'" + content + "'", AnsibleModule.readDesc("C(" + content + ")"));
+        assertEquals("C(" + content, AnsibleModule.readDesc("C(" + content));
+        assertEquals("'path(value)' 'label' 'ref' 'stdout'", AnsibleModule.readDesc(
+                "C(path\\(value\\)) L(label, https://example.com) R(ref, target) RV(stdout)"));
+    }
+
+    @Test
+    public void parsesLegacyModuleCategories() {
+        Doc doc = new Doc();
+        doc.setFilename("/usr/lib/ansible/modules/cloud/provider/module_name.py");
+        assertEquals("cloud/provider", doc.category);
+        for (String filename : new String[]{"/usr/lib/ansible/modules/copy.py",
+                "/collections/acme/cloud/plugins/modules/server.py", "/ansible/modules/cloud/readme.txt", null}) {
+            Doc other = new Doc();
+            other.setFilename(filename);
+            assertNull(other.category);
+        }
+    }
+
+    @Test
+    public void acceptsOptionsInAnyOrderAndRejectsMissingPaths() throws Exception {
+        Path input = temporaryFolder.newFile("input.json").toPath();
+        Path output = temporaryFolder.newFolder("output").toPath();
+        Files.writeString(input, """
+                {"ansible.builtin.copy": {"doc": {"module": "copy", "collection": "ansible.builtin"}}}
+                """);
+        ExtractDoc.main(new String[]{"--output", output.toString(), "--fqcn", "--input", input.toString()});
+        assertEquals("ansible.builtin.copy", Files.readString(output.resolve("plugins_list.txt")));
+        assertThrows(IllegalArgumentException.class, () -> ExtractDoc.main(new String[]{"--input"}));
+        assertThrows(IllegalArgumentException.class, () -> ExtractDoc.main(new String[]{"--output"}));
     }
 
     private Map<String, AnsibleModule> read(String json) throws Exception {

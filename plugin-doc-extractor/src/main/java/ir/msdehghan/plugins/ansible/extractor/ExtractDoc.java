@@ -1,3 +1,5 @@
+package ir.msdehghan.plugins.ansible.extractor;
+
 import api.AnsibleModuleDto;
 import api.AnsibleModuleDto.Field;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -43,18 +45,20 @@ public class ExtractDoc {
         boolean fqcn = false;
         Path input = null;
         Path output = Paths.get("./docs");
-        for (int i = 0; i < args.length; i++) {
-            switch (args[i]) {
+        var arguments = List.of(args).iterator();
+        while (arguments.hasNext()) {
+            String option = arguments.next();
+            switch (option) {
                 case "--fqcn" -> fqcn = true;
                 case "--input", "--output" -> {
-                    String option = args[i];
-                    if (++i == args.length) {
+                    if (!arguments.hasNext()) {
                         throw new IllegalArgumentException("Missing path for " + option);
                     }
-                    if (option.equals("--input")) input = Paths.get(args[i]);
-                    else output = Paths.get(args[i]);
+                    Path path = Paths.get(arguments.next());
+                    if (option.equals("--input")) input = path;
+                    else output = path;
                 }
-                default -> throw new IllegalArgumentException("Unknown option: " + args[i]);
+                default -> throw new IllegalArgumentException("Unknown option: " + option);
             }
         }
         ObjectMapper mapper = new JsonMapper();
@@ -83,21 +87,16 @@ public class ExtractDoc {
         Map<String, AnsibleModuleDto> result = new TreeMap<>();
         // Builtin modules go first so they win short name collisions with collections.
         List<Map.Entry<String, AnsibleModule>> entries = new ArrayList<>(map.entrySet());
+        entries.removeIf(e -> e.getValue() == null || e.getValue().doc == null
+                || SKIPPED_MODULES.contains(Doc.shortName(e.getValue().doc.fullName(e.getKey()))));
         entries.sort(Comparator
-                .comparing((Map.Entry<String, AnsibleModule> e) -> e.getValue() == null || e.getValue().doc == null
-                        || !e.getValue().doc.fullName(e.getKey()).startsWith(BUILTIN_PREFIX))
+                .comparing((Map.Entry<String, AnsibleModule> e) -> !e.getValue().doc.fullName(e.getKey()).startsWith(BUILTIN_PREFIX))
                 .thenComparing(Map.Entry::getKey));
 
         for (Map.Entry<String, AnsibleModule> entry : entries) {
             AnsibleModule m = entry.getValue();
-            if (m == null || m.doc == null) {
-                continue;
-            }
             String fullName = m.doc.fullName(entry.getKey());
             String shortName = Doc.shortName(fullName);
-            if (SKIPPED_MODULES.contains(shortName)) {
-                continue;
-            }
             result.putIfAbsent(fullName, convert(m, fullName, fullName));
             // ansible-doc may resolve a redirect to another plugin_name. Keep the requested FQCN too.
             if (entry.getKey().contains(".") && !entry.getKey().equals(fullName)) {
@@ -143,7 +142,7 @@ public class ExtractDoc {
     }
 
     private static Map<String, Field> convertOptions(Map<String, Option> options) {
-        if (options == null || options.isEmpty()) return null;
+        if (options == null || options.isEmpty()) return Map.of();
         Map<String, Field> fields = new TreeMap<>();
         for (Map.Entry<String, Option> optionEntry : options.entrySet()) {
             Option option = optionEntry.getValue();
@@ -164,7 +163,7 @@ public class ExtractDoc {
             field.documentation = option.documentation;
             fields.put(optionEntry.getKey(), field);
         }
-        return fields.isEmpty() ? null : fields;
+        return fields;
     }
 }
 
@@ -187,7 +186,7 @@ class AnsibleModule {
     }
 
     // Ansible markup: B(), C(), E(), I(), M(), O(), P(), U(), V(), L(text, url), R(text, ref), RV(), ... Parentheses can be escaped with a backslash.
-    private static final Pattern MARKUP = Pattern.compile("\\s?(?<![A-Za-z0-9_])(RV|[A-Z])\\(((?:\\\\.|[^)\\\\])*)\\)");
+    private static final Pattern MARKUP = Pattern.compile("\\s?(?<!\\w)(RV|[A-Z])\\(((?:\\\\.|[^)\\\\])*+)\\)");
     private static final Pattern ESCAPE = Pattern.compile("\\\\(.)");
 
     public static String readDesc(Object o) {
@@ -219,7 +218,8 @@ class AnsibleModule {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Doc {
     public String module;
-    public String plugin_name;
+    @JsonProperty("plugin_name")
+    public String pluginName;
     public String collection;
     public String version_added;
     public String short_description;
@@ -251,21 +251,27 @@ class Doc {
     }
 
     // Only old style paths (ansible/modules/<category>/x.py) have a category, collections fall back to the collection name.
-    private static final Pattern CATEGORY = Pattern.compile("^.*ansible/modules/(.+?)/[a-zA-Z0-9_]+\\.py$");
+    private static final String MODULES_DIRECTORY = "ansible/modules/";
+    private static final Pattern MODULE_FILENAME = Pattern.compile("\\w+\\.py");
 
     @JsonSetter("filename")
     public void setFilename(String filename) {
         this.filename = filename;
+        category = null;
         if (filename != null) {
-            Matcher matcher = CATEGORY.matcher(filename);
-            category = matcher.matches() ? matcher.group(1) : null;
+            int modulesIndex = filename.lastIndexOf(MODULES_DIRECTORY);
+            int lastSlash = filename.lastIndexOf('/');
+            if (modulesIndex >= 0 && lastSlash > modulesIndex + MODULES_DIRECTORY.length()
+                    && MODULE_FILENAME.matcher(filename.substring(lastSlash + 1)).matches()) {
+                category = filename.substring(modulesIndex + MODULES_DIRECTORY.length(), lastSlash);
+            }
         }
     }
 
     /** Fully qualified name of the module, falling back to the key used in ansible-doc output. */
     public String fullName(String key) {
-        if (plugin_name != null && !plugin_name.isBlank()) {
-            return plugin_name;
+        if (pluginName != null && !pluginName.isBlank()) {
+            return pluginName;
         }
         if (collection != null && module != null && !module.contains(".")) {
             return collection + "." + module;
