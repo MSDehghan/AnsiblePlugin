@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,45 +40,57 @@ public class ExtractDoc {
     private static final Set<String> SKIPPED_FIELDS = Set.of("free-form");
 
     public static void main(String[] args) throws IOException {
-        boolean fqcn = false;
-        Path input = null;
-        Path output = Paths.get("./docs");
-        var arguments = List.of(args).iterator();
-        while (arguments.hasNext()) {
-            String option = arguments.next();
-            switch (option) {
-                case "--fqcn" -> fqcn = true;
-                case "--input", "--output" -> {
-                    if (!arguments.hasNext()) {
-                        throw new IllegalArgumentException("Missing path for " + option);
+        Options options = Options.parse(args);
+        ObjectMapper mapper = JsonMapper.builder()
+                .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+                .build();
+        Map<String, AnsibleModule> input = readModules(options.input(), mapper);
+        Map<String, AnsibleModuleDto> modules = convertAll(input, options.fqcn());
+        writeModules(options.output(), modules, mapper);
+    }
+
+    private record Options(boolean fqcn, Path input, Path output) {
+        private static Options parse(String[] args) {
+            boolean fqcn = false;
+            Path input = null;
+            Path output = Path.of("./docs");
+            var arguments = List.of(args).iterator();
+            while (arguments.hasNext()) {
+                String option = arguments.next();
+                switch (option) {
+                    case "--fqcn" -> fqcn = true;
+                    case "--input", "--output" -> {
+                        if (!arguments.hasNext()) {
+                            throw new IllegalArgumentException("Missing path for " + option);
+                        }
+                        Path path = Path.of(arguments.next());
+                        if (option.equals("--input")) input = path;
+                        else output = path;
                     }
-                    Path path = Paths.get(arguments.next());
-                    if (option.equals("--input")) input = path;
-                    else output = path;
+                    default -> throw new IllegalArgumentException("Unknown option: " + option);
                 }
-                default -> throw new IllegalArgumentException("Unknown option: " + option);
             }
+            return new Options(fqcn, input, output);
         }
-        ObjectMapper mapper = new JsonMapper();
-        Map<String, AnsibleModule> map;
+    }
+
+    private static Map<String, AnsibleModule> readModules(Path input, ObjectMapper mapper) throws IOException {
         try (InputStream stream = input == null ? ExtractDoc.class.getResourceAsStream("/plugins.json")
                 : Files.newInputStream(input)) {
             if (stream == null) {
                 throw new IOException("Missing plugins.json; supply --input <path>.");
             }
-            map = mapper.readValue(stream, new TypeReference<>() {});
+            return mapper.readValue(stream, new TypeReference<>() {});
         }
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    }
 
-        Map<String, AnsibleModuleDto> modules = convertAll(map, fqcn);
-
+    private static void writeModules(Path output, Map<String, AnsibleModuleDto> modules, ObjectMapper mapper)
+            throws IOException {
         Files.createDirectories(output);
         for (AnsibleModuleDto value : modules.values()) {
-            Files.write(output.resolve(value.name + ".json"), mapper.writeValueAsBytes(value),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(output.resolve(value.name + ".json"), mapper.writeValueAsBytes(value));
         }
-        Files.writeString(output.resolve("plugins_list.txt"), String.join("\n", modules.keySet()),
-                StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.writeString(output.resolve("plugins_list.txt"), String.join("\n", modules.keySet()));
     }
 
     public static Map<String, AnsibleModuleDto> convertAll(Map<String, AnsibleModule> map, boolean fqcn) {
@@ -97,13 +107,13 @@ public class ExtractDoc {
             AnsibleModule m = entry.getValue();
             String fullName = m.doc.fullName(entry.getKey());
             String shortName = Doc.shortName(fullName);
-            result.putIfAbsent(fullName, convert(m, fullName, fullName));
+            result.computeIfAbsent(fullName, name -> convert(m, name, fullName));
             // ansible-doc may resolve a redirect to another plugin_name. Keep the requested FQCN too.
             if (entry.getKey().contains(".") && !entry.getKey().equals(fullName)) {
-                result.putIfAbsent(entry.getKey(), convert(m, entry.getKey(), fullName));
+                result.computeIfAbsent(entry.getKey(), name -> convert(m, name, fullName));
             }
-            if (!fqcn && !result.containsKey(shortName)) {
-                result.put(shortName, convert(m, shortName, fullName));
+            if (!fqcn) {
+                result.computeIfAbsent(shortName, name -> convert(m, name, fullName));
             }
         }
         return result;
@@ -190,28 +200,25 @@ class AnsibleModule {
     private static final Pattern ESCAPE = Pattern.compile("\\\\(.)");
 
     public static String readDesc(Object o) {
-        if (o != null) {
-            String text;
-            if (o instanceof List<?> list) {
-                text = String.join(" ", list.stream().map(String::valueOf).toList());
-            } else {
-                text = o.toString();
-            }
-            return MARKUP.matcher(text).replaceAll(r -> {
-                String type = r.group(1);
-                String content = r.group(2);
-                if (type.equals("L") || type.equals("R")) {
-                    // L(text, url) and R(text, ref): keep the text only.
-                    int comma = content.indexOf(',');
-                    if (comma >= 0) {
-                        content = content.substring(0, comma);
-                    }
+        String text = switch (o) {
+            case null -> null;
+            case List<?> list -> String.join(" ", list.stream().map(String::valueOf).toList());
+            default -> o.toString();
+        };
+        if (text == null) return null;
+        return MARKUP.matcher(text).replaceAll(r -> {
+            String type = r.group(1);
+            String content = r.group(2);
+            if (type.equals("L") || type.equals("R")) {
+                // L(text, url) and R(text, ref): keep the text only.
+                int comma = content.indexOf(',');
+                if (comma >= 0) {
+                    content = content.substring(0, comma);
                 }
-                content = ESCAPE.matcher(content.trim()).replaceAll("$1");
-                return Matcher.quoteReplacement(" '" + content + "'");
-            }).trim();
-        }
-        return null;
+            }
+            content = ESCAPE.matcher(content.trim()).replaceAll("$1");
+            return Matcher.quoteReplacement(" '" + content + "'");
+        }).trim();
     }
 }
 

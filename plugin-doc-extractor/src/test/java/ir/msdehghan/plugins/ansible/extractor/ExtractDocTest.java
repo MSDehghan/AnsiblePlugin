@@ -11,13 +11,15 @@ import org.junit.rules.TemporaryFolder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class ExtractDocTest {
-    private final ObjectMapper mapper = new JsonMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    private final ObjectMapper mapper = JsonMapper.builder()
+            .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+            .build();
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -130,6 +132,14 @@ public class ExtractDocTest {
         assertEquals("C(" + content, AnsibleModule.readDesc("C(" + content));
         assertEquals("'path(value)' 'label' 'ref' 'stdout'", AnsibleModule.readDesc(
                 "C(path\\(value\\)) L(label, https://example.com) R(ref, target) RV(stdout)"));
+    }
+
+    @Test
+    public void normalizesDescriptionShapes() {
+        assertNull(AnsibleModule.readDesc(null));
+        assertEquals("", AnsibleModule.readDesc(List.of()));
+        assertEquals("Use 'copy'.", AnsibleModule.readDesc(List.of("Use", "M(copy).")));
+        assertEquals("123", AnsibleModule.readDesc(123));
     }
 
     @Test

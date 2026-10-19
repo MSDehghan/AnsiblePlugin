@@ -12,8 +12,9 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class AnsibleModuleDtoParsingTest {
-    private final ObjectMapper mapper = new JsonMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    private final ObjectMapper mapper = JsonMapper.builder()
+            .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+            .build();
 
     @Test
     public void readsGeneratedNestedOptionsAndMetadata() throws Exception {
