@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.jackson.databind)
     testImplementation(libs.junit)
     testImplementation(libs.opentest4j)
+    testImplementation(project(":plugin-doc-extractor"))
     intellijPlatform {
         intellijIdea(providers.gradleProperty("platformVersion"))
         bundledPlugins("org.jetbrains.plugins.yaml", "com.intellij.modules.json")
