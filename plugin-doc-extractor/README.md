@@ -1,8 +1,21 @@
 # Generating module documentation
 
+With Python 3 and Ansible installed and `python3` and `ansible-doc` on `PATH`, run
+from the repository root:
+
+```sh
+./gradlew generatePluginDocs
+```
+
+This collects the documentation of every installed module and collection, then replaces
+`src/main/resources/docs/` and `src/main/resources/plugins_list.txt` in the root project.
+Activate the desired Ansible environment first.
+
+## Generating from a specific input
+
 The extractor reads the JSON returned by `ansible-doc -t module --json <module names>`.
-Module names are required. Discover installed module names with `ansible-doc -t module --list --json`
-and pass the keys of that JSON object to the documentation command in a single invocation.
+Module names are required. Discover installed module names with `ansible-doc -t module --list_files`
+and pass the names in its first column to the documentation command.
 Only installed modules and collections are included.
 
 For example, from the repository root:
@@ -36,9 +49,5 @@ Module identity is stored in `qualifiedName`, `collection`, and `filename`. Addi
 option, and deprecation metadata is retained in `documentation`. Map-shaped choices retain
 their descriptions in `choiceDescriptions` alongside the normalized `choices` list.
 
-To install the generated files, copy the JSON files into `src/main/resources/docs/` and
-`plugins_list.txt` into `src/main/resources/plugins_list.txt` in the root project. Regenerate
-into a fresh directory when changing the set of input modules, to avoid retaining old JSON files.
-
-For older Ansible input, check whether `copy.mode` needs its type changed to `raw`;
-current Ansible documentation already uses `raw`.
+To install the output manually, copy the JSON files into `src/main/resources/docs/` and
+`plugins_list.txt` into `src/main/resources/`, or use `./gradlew generatePluginDocs`.

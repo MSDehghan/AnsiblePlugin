@@ -21,4 +21,12 @@ Plugin that helps develop ansible files.
 ## Contribution
 To report bugs and feature requests you can create a Github issue. For code contribution you can create pull requests.
 
+To regenerate the plugin's module documentation:
+
+```sh
+./gradlew generatePluginDocs
+```
+
+See [the extractor instructions](plugin-doc-extractor/README.md) for requirements and details.
+
 Any type of contribution is **highly** appreciated.
