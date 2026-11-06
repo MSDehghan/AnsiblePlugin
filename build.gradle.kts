@@ -24,8 +24,6 @@ dependencies {
         intellijIdea(providers.gradleProperty("platformVersion"))
         bundledPlugins("org.jetbrains.plugins.yaml", "com.intellij.modules.json")
         testFramework(TestFrameworkType.Platform)
-        // Workaround for https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/2261
-        testBundledPlugins("com.intellij.modules.ultimate")
     }
 }
 
