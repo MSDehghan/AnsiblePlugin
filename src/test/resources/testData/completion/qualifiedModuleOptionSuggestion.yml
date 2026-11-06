@@ -1,0 +1,5 @@
+- name: Play1
+  hosts: h1
+  tasks:
+    - ansible.builtin.copy:
+        <caret>

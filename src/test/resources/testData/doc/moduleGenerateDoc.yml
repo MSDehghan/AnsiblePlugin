@@ -1,7 +1,7 @@
 - name: Play1
   hosts: h1
   tasks:
-    - digital<caret>_ocean:
+    - uptime<caret>robot:
 
 - name: Play2
   hosts: h2

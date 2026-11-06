@@ -1,5 +1,6 @@
 package ir.msdehghan.plugins.ansible.model.ansible.task;
 
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.icons.AllIcons;
@@ -24,6 +25,8 @@ public class AnsibleModuleField implements YamlField {
         FREE_FORM_MODULES = freeFormMap;
     }
 
+    private static final String BUILTIN_PREFIX = "ansible.builtin.";
+
     private final String name;
     private final AnsibleModuleType moduleType;
 
@@ -34,9 +37,12 @@ public class AnsibleModuleField implements YamlField {
 
     @Override
     public LookupElement getLookupElement() {
-        return LookupElementBuilder.create(this, name)
+        LookupElementBuilder element = LookupElementBuilder.create(this, name)
                 .withIcon(AllIcons.Nodes.Method)
                 .withTypeText("Ansible Module");
+        // Qualified names would otherwise crowd short names and task keywords out of the bounded lookup.
+        if (!name.contains(".")) return element;
+        return PrioritizedLookupElement.withPriority(element, name.startsWith(BUILTIN_PREFIX) ? -1 : -2);
     }
 
     @Override
@@ -48,7 +54,8 @@ public class AnsibleModuleField implements YamlField {
     public YamlType getType(Relation relation) {
         return switch (relation) {
             case MAPPING -> moduleType;
-            case SCALAR -> FREE_FORM_MODULES.getOrDefault(name, YamlTypes.STRING);
+            case SCALAR -> FREE_FORM_MODULES.getOrDefault(
+                    name.startsWith(BUILTIN_PREFIX) ? name.substring(BUILTIN_PREFIX.length()) : name, YamlTypes.STRING);
             default -> null;
         };
     }
@@ -70,7 +77,7 @@ public class AnsibleModuleField implements YamlField {
             sb.append(DocumentationMarkup.SECTIONS_START);
             AnsibleUtil.appendSection("Why", moduleDto.deprecated.why, sb);
             AnsibleUtil.appendSection("Removed in", moduleDto.deprecated.removedIn, sb);
-            AnsibleUtil.appendSection("Alternative", moduleDto.description, sb);
+            AnsibleUtil.appendSection("Alternative", moduleDto.deprecated.alternative, sb);
             sb.append(DocumentationMarkup.SECTIONS_END);
             sb.append("<hr/>");
         }

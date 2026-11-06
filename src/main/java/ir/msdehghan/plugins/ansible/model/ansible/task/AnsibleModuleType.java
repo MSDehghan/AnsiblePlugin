@@ -15,7 +15,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 class AnsibleModuleType extends YamlType implements MappingType {
-    private static final ObjectReader READER = new ObjectMapper().readerFor(AnsibleModuleDto.class);
+    // Strict so generated properties missing from AnsibleModuleDto fail instead of being dropped.
+    static final ObjectReader READER = new ObjectMapper().readerFor(AnsibleModuleDto.class);
     private AnsibleModuleDto moduleDto;
     private List<YamlField> fields;
     private List<YamlField> fieldsRO;
@@ -50,8 +51,9 @@ class AnsibleModuleType extends YamlType implements MappingType {
                 if (moduleDto == null) {
                     throw new IllegalStateException("Ansible Module " + name + " can't be loaded. it's Unexpected!");
                 }
-                fields = moduleDto.fields.entrySet().stream().map(AnsibleModuleType::convertToYamlField)
-                        .collect(Collectors.toList());
+                // Modules without options have no fields.
+                fields = moduleDto.fields == null ? List.of() : moduleDto.fields.entrySet().stream()
+                        .map(AnsibleModuleType::convertToYamlField).collect(Collectors.toList());
                 fieldsRO = Collections.unmodifiableList(fields);
             } catch (IOException e) {
                 throw new IllegalStateException("Can't read ansible module " + name, e);

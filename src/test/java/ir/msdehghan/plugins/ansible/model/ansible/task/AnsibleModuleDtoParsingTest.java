@@ -3,8 +3,13 @@ package ir.msdehghan.plugins.ansible.model.ansible.task;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import ir.msdehghan.plugins.ansible.extractor.ExtractDoc;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +20,76 @@ public class AnsibleModuleDtoParsingTest {
     private final ObjectMapper mapper = JsonMapper.builder()
             .serializationInclusion(JsonInclude.Include.NON_EMPTY)
             .build();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Test
+    public void ideReaderRetainsExtractorOutput() throws Exception {
+        Path input = temporaryFolder.newFile("plugins.json").toPath();
+        Path output = temporaryFolder.newFolder("docs").toPath();
+        Files.writeString(input, """
+                {"acme.cloud.server": {
+                  "doc": {
+                    "module": "server", "collection": "acme.cloud",
+                    "filename": "/collections/acme/cloud/plugins/modules/server.py",
+                    "author": ["Example Author"],
+                    "deprecated": {"why": "Old API.", "alternative": "Use M(acme.cloud.server2).",
+                      "removed_in": "3.0.0", "removed_from_collection": "acme.cloud"},
+                    "options": {
+                      "networks": {"type": "list", "elements": "dict", "suboptions": {
+                        "settings": {"type": "dict", "suboptions": {
+                          "enabled": {"type": "bool", "default": false, "required": true},
+                          "state": {"type": "str", "aliases": ["status"],
+                            "choices": {"up": "Running", "down": "Stopped"},
+                            "version_added_collection": "acme.cloud"}
+                        }}
+                      }}
+                    }
+                  },
+                  "return": {"result": {"type": "dict", "contains": {"id": {"type": "str"}}}},
+                  "examples": "- acme.cloud.server: {}\\n",
+                  "metadata": {"status": [], "custom": {"a": 1}}
+                },
+                "acme.cloud.ping": {"doc": {"module": "ping", "collection": "acme.cloud"}}}
+                """);
+        ExtractDoc.main(new String[]{"--input", input.toString(), "--output", output.toString()});
+
+        // The strict IDE reader must accept every generated file, including short-name aliases.
+        try (var files = Files.list(output)) {
+            for (Path file : files.filter(f -> f.toString().endsWith(".json")).toList()) {
+                assertNotNull(file.toString(), AnsibleModuleType.READER.readValue(file.toFile()));
+            }
+        }
+
+        AnsibleModuleDto dto = AnsibleModuleType.READER.readValue(output.resolve("server.json").toFile());
+        assertEquals("server", dto.name);
+        assertEquals("acme.cloud.server", dto.qualifiedName);
+        assertEquals("acme.cloud", dto.collection);
+        assertEquals("/collections/acme/cloud/plugins/modules/server.py", dto.filename);
+        assertEquals("- acme.cloud.server: {}\n", dto.examples);
+        assertEquals(1, dto.metadata.at("/custom/a").asInt());
+        assertEquals(Set.of("result"), dto.returnFields);
+        assertEquals("str", dto.returns.get("result").at("/contains/id/type").asText());
+        assertEquals("Example Author", dto.documentation.get("author").get(0).asText());
+        assertEquals("Use 'acme.cloud.server2'.", dto.deprecated.alternative);
+        assertEquals("acme.cloud", dto.deprecated.documentation.get("removed_from_collection").asText());
+
+        AnsibleModuleDto.Field networks = dto.fields.get("networks");
+        assertEquals("dict", networks.elements);
+        AnsibleModuleDto.Field settings = networks.suboptions.get("settings");
+        assertEquals("dict", settings.type);
+        AnsibleModuleDto.Field enabled = settings.suboptions.get("enabled");
+        assertTrue(enabled.required);
+        assertEquals("false", enabled.defaultValue);
+        AnsibleModuleDto.Field state = settings.suboptions.get("state");
+        assertEquals(List.of("status"), state.aliases);
+        assertEquals(List.of("up", "down"), state.choices);
+        assertEquals("Running", state.choiceDescriptions.get("up").asText());
+        assertEquals("acme.cloud", state.documentation.get("version_added_collection").asText());
+
+        assertNull(AnsibleModuleType.READER.<AnsibleModuleDto>readValue(output.resolve("ping.json").toFile()).fields);
+    }
 
     @Test
     public void readsGeneratedNestedOptionsAndMetadata() throws Exception {
