@@ -1,6 +1,12 @@
-copy
-composer
+ansible.builtin.command
+ansible.builtin.copy
+ansible.builtin.include_tasks
+ansible.builtin.systemd
 command
-systemd
-digital_ocean
+community.general.composer
+community.general.uptimerobot
+composer
+copy
 include_tasks
+systemd
+uptimerobot

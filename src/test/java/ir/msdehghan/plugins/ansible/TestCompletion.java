@@ -46,9 +46,34 @@ public class TestCompletion extends BasePlatformTestCase {
     public void testPlayTaskSuggestion() {
         List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile());
         assertNotEmpty(completionVariants);
-        assertContainsElements(completionVariants, "copy", "composer");
-        // Task other fields must exists too
-        assertContainsElements(completionVariants, "loop_control", "command");
+        assertContainsElements(completionVariants, "copy", "composer", "command");
+        // Task keywords must exist too. Only prefix matches are guaranteed a place in a full module list.
+        assertContainsElements(completionVariants, "collections", "connection");
+    }
+
+    public void testShortModuleNamesRankBeforeQualifiedNames() {
+        List<String> completionVariants = myFixture.getCompletionVariants("playTaskSuggestion.yml");
+        assertContainsElements(completionVariants, "composer", "community.general.composer");
+        assertTrue(completionVariants.indexOf("composer") < completionVariants.indexOf("community.general.composer"));
+    }
+
+    public void testQualifiedModuleOptionSuggestion() {
+        List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile());
+        assertContainsElements(completionVariants, "dest", "backup");
+    }
+
+    public void testQualifiedFreeFormModule() {
+        assertCompletesFilePaths("qualifiedFreeFormModule.yml");
+    }
+
+    public void testQualifiedImportPlaybook() {
+        assertCompletesFilePaths("qualifiedImportPlaybook.yml");
+    }
+
+    private void assertCompletesFilePaths(String testDataFile) {
+        List<String> completionVariants = myFixture.getCompletionVariants(testDataFile,
+                "role/tasks/main.yml", "notAnsibleFile.yml");
+        assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
     }
 
     public void testTaskOptionSuggestion() {

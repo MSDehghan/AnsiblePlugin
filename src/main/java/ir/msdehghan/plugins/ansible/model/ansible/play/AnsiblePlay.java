@@ -6,6 +6,8 @@ import ir.msdehghan.plugins.ansible.model.ansible.task.AnsibleTask;
 import ir.msdehghan.plugins.ansible.model.yml.YamlTypes;
 import ir.msdehghan.plugins.ansible.model.yml.type.YamlMappingType;
 
+import java.util.List;
+
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.getCollectionsGroup;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.*;
 
@@ -46,8 +48,10 @@ public class AnsiblePlay extends YamlMappingType {
         addField("max_fail_percentage").setType(YamlTypes.STRING)
                 .setDescription("can be used to abort the run after a given percentage of hosts in the current batch has failed.");
 
-        addField("import_playbook").setType(YamlTypes.YAML_FILE_PATH)
-                .setDescription("Includes a file with a list of plays to be executed");
+        for (String importPlaybook : List.of("import_playbook", "ansible.builtin.import_playbook")) {
+            addField(importPlaybook).setType(YamlTypes.YAML_FILE_PATH)
+                    .setDescription("Includes a file with a list of plays to be executed");
+        }
 
         addField("order").setType(YamlTypes.STRING)
                 .setDescription("Controls the sorting of hosts as they are used for executing the play. Possible values are inventory (default), sorted, reverse_sorted, reverse_inventory and shuffle.");

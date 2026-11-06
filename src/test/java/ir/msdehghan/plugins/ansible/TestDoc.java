@@ -30,10 +30,10 @@ public class TestDoc extends BasePlatformTestCase {
     public void testModuleGenerateDoc() {
         PsiFile file = configureFileByTestName();
         String doc = getDocInCaret(file);
-        assertTrue(doc.contains("Module digital_ocean"));
+        assertTrue(doc.contains("Module uptimerobot"));
         assertTrue(doc.contains("Deprecated"));
         assertTrue(doc.contains("Removed in"));
-        assertTrue(doc.contains("Added in"));
+        assertTrue(doc.contains("Use the Uptime Robot API v3 directly"));
     }
 
     public void testModuleLookupDoc() {
@@ -65,7 +65,7 @@ public class TestDoc extends BasePlatformTestCase {
     public void testRoleModuleOptionGenerateDoc() {
         PsiFile file = myFixture.configureByFile("role/handlers/main.yml");
         String doc = getDocInCaret(file);
-        assertTrue(doc.contains("Name of the service"));
+        assertTrue(doc.contains("Name of the unit"));
     }
 
     public void testWrongPlace() {
