@@ -18,12 +18,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Converts the output of <code>ansible-doc -t module --json &lt;module names&gt;</code>
@@ -39,14 +43,13 @@ public class ExtractDoc {
     private static final Set<String> SKIPPED_MODULES = Set.of("import_playbook");
     private static final Set<String> SKIPPED_FIELDS = Set.of("free-form");
 
+    static final ObjectMapper MAPPER = JsonMapper.builder()
+            .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+            .build();
+
     public static void main(String[] args) throws IOException {
         Options options = Options.parse(args);
-        ObjectMapper mapper = JsonMapper.builder()
-                .serializationInclusion(JsonInclude.Include.NON_EMPTY)
-                .build();
-        Map<String, AnsibleModule> input = readModules(options.input(), mapper);
-        Map<String, AnsibleModuleDto> modules = convertAll(input, options.fqcn());
-        writeModules(options.output(), modules, mapper);
+        writeModules(options.output(), convertAll(readModules(options.input()), options.fqcn()));
     }
 
     private record Options(boolean fqcn, Path input, Path output) {
@@ -59,62 +62,61 @@ public class ExtractDoc {
                 String option = arguments.next();
                 switch (option) {
                     case "--fqcn" -> fqcn = true;
-                    case "--input", "--output" -> {
-                        if (!arguments.hasNext()) {
-                            throw new IllegalArgumentException("Missing path for " + option);
-                        }
-                        Path path = Path.of(arguments.next());
-                        if (option.equals("--input")) input = path;
-                        else output = path;
-                    }
+                    case "--input" -> input = path(arguments, option);
+                    case "--output" -> output = path(arguments, option);
                     default -> throw new IllegalArgumentException("Unknown option: " + option);
                 }
             }
             return new Options(fqcn, input, output);
         }
+
+        private static Path path(Iterator<String> arguments, String option) {
+            if (!arguments.hasNext()) {
+                throw new IllegalArgumentException("Missing path for " + option);
+            }
+            return Path.of(arguments.next());
+        }
     }
 
-    private static Map<String, AnsibleModule> readModules(Path input, ObjectMapper mapper) throws IOException {
+    private static Map<String, AnsibleModule> readModules(Path input) throws IOException {
         try (InputStream stream = input == null ? ExtractDoc.class.getResourceAsStream("/plugins.json")
                 : Files.newInputStream(input)) {
             if (stream == null) {
                 throw new IOException("Missing plugins.json; supply --input <path>.");
             }
-            return mapper.readValue(stream, new TypeReference<>() {});
+            return MAPPER.readValue(stream, new TypeReference<>() {});
         }
     }
 
-    private static void writeModules(Path output, Map<String, AnsibleModuleDto> modules, ObjectMapper mapper)
-            throws IOException {
+    private static void writeModules(Path output, Map<String, AnsibleModuleDto> modules) throws IOException {
         Files.createDirectories(output);
         for (AnsibleModuleDto value : modules.values()) {
-            Files.write(output.resolve(value.name + ".json"), mapper.writeValueAsBytes(value));
+            Files.write(output.resolve(value.name + ".json"), MAPPER.writeValueAsBytes(value));
         }
         Files.writeString(output.resolve("plugins_list.txt"), String.join("\n", modules.keySet()));
     }
 
     public static Map<String, AnsibleModuleDto> convertAll(Map<String, AnsibleModule> map, boolean fqcn) {
-        Map<String, AnsibleModuleDto> result = new TreeMap<>();
+        record Entry(String key, AnsibleModule module, String fullName) {}
+        List<Entry> entries = new ArrayList<>();
+        map.forEach((key, module) -> {
+            if (module != null && module.doc != null) {
+                String fullName = module.doc.fullName(key);
+                if (!SKIPPED_MODULES.contains(Doc.shortName(fullName))) {
+                    entries.add(new Entry(key, module, fullName));
+                }
+            }
+        });
         // Builtin modules go first so they win short name collisions with collections.
-        List<Map.Entry<String, AnsibleModule>> entries = new ArrayList<>(map.entrySet());
-        entries.removeIf(e -> e.getValue() == null || e.getValue().doc == null
-                || SKIPPED_MODULES.contains(Doc.shortName(e.getValue().doc.fullName(e.getKey()))));
-        entries.sort(Comparator
-                .comparing((Map.Entry<String, AnsibleModule> e) -> !e.getValue().doc.fullName(e.getKey()).startsWith(BUILTIN_PREFIX))
-                .thenComparing(Map.Entry::getKey));
+        entries.sort(Comparator.comparing((Entry e) -> !e.fullName().startsWith(BUILTIN_PREFIX))
+                .thenComparing(Entry::key));
 
-        for (Map.Entry<String, AnsibleModule> entry : entries) {
-            AnsibleModule m = entry.getValue();
-            String fullName = m.doc.fullName(entry.getKey());
-            String shortName = Doc.shortName(fullName);
-            result.computeIfAbsent(fullName, name -> convert(m, name, fullName));
+        Map<String, AnsibleModuleDto> result = new TreeMap<>();
+        for (Entry e : entries) {
             // ansible-doc may resolve a redirect to another plugin_name. Keep the requested FQCN too.
-            if (entry.getKey().contains(".") && !entry.getKey().equals(fullName)) {
-                result.computeIfAbsent(entry.getKey(), name -> convert(m, name, fullName));
-            }
-            if (!fqcn) {
-                result.computeIfAbsent(shortName, name -> convert(m, name, fullName));
-            }
+            Stream.of(e.fullName(), e.key().contains(".") ? e.key() : null, fqcn ? null : Doc.shortName(e.fullName()))
+                    .filter(Objects::nonNull)
+                    .forEach(name -> result.computeIfAbsent(name, n -> convert(e.module(), n, e.fullName())));
         }
         return result;
     }
@@ -141,9 +143,9 @@ public class ExtractDoc {
 
         if (doc.deprecated != null) {
             moduleDto.deprecated = new AnsibleModuleDto.Deprecated();
-            moduleDto.deprecated.alternative = doc.deprecated.alternative;
+            moduleDto.deprecated.alternative = AnsibleModule.readDesc(doc.deprecated.alternative);
             moduleDto.deprecated.removedIn = doc.deprecated.removed_in;
-            moduleDto.deprecated.why = doc.deprecated.why;
+            moduleDto.deprecated.why = AnsibleModule.readDesc(doc.deprecated.why);
             moduleDto.deprecated.documentation = doc.deprecated.documentation;
         }
 
@@ -186,26 +188,15 @@ class AnsibleModule {
     @JsonProperty("return")
     public Map<String, JsonNode> returnFields;
 
-    @Override
-    public String toString() {
-        return "AnsibleModule{" +
-                "\nmetadata=" + metadata +
-                ",\n doc=" + doc +
-                ",\n returnFields=" + returnFields +
-                '}';
-    }
-
     // Ansible markup: B(), C(), E(), I(), M(), O(), P(), U(), V(), L(text, url), R(text, ref), RV(), ... Parentheses can be escaped with a backslash.
     private static final Pattern MARKUP = Pattern.compile("\\s?(?<!\\w)(RV|[A-Z])\\(((?:\\\\.|[^)\\\\])*+)\\)");
     private static final Pattern ESCAPE = Pattern.compile("\\\\(.)");
 
     public static String readDesc(Object o) {
-        String text = switch (o) {
-            case null -> null;
-            case List<?> list -> String.join(" ", list.stream().map(String::valueOf).toList());
-            default -> o.toString();
-        };
-        if (text == null) return null;
+        if (o == null) return null;
+        String text = o instanceof List<?> list
+                ? list.stream().map(String::valueOf).collect(Collectors.joining(" "))
+                : o.toString();
         return MARKUP.matcher(text).replaceAll(r -> {
             String type = r.group(1);
             String content = r.group(2);
@@ -258,21 +249,13 @@ class Doc {
     }
 
     // Only old style paths (ansible/modules/<category>/x.py) have a category, collections fall back to the collection name.
-    private static final String MODULES_DIRECTORY = "ansible/modules/";
-    private static final Pattern MODULE_FILENAME = Pattern.compile("\\w+\\.py");
+    private static final Pattern LEGACY_MODULE_PATH = Pattern.compile(".*ansible/modules/(.+)/\\w+\\.py");
 
     @JsonSetter("filename")
     public void setFilename(String filename) {
         this.filename = filename;
-        category = null;
-        if (filename != null) {
-            int modulesIndex = filename.lastIndexOf(MODULES_DIRECTORY);
-            int lastSlash = filename.lastIndexOf('/');
-            if (modulesIndex >= 0 && lastSlash > modulesIndex + MODULES_DIRECTORY.length()
-                    && MODULE_FILENAME.matcher(filename.substring(lastSlash + 1)).matches()) {
-                category = filename.substring(modulesIndex + MODULES_DIRECTORY.length(), lastSlash);
-            }
-        }
+        Matcher matcher = filename == null ? null : LEGACY_MODULE_PATH.matcher(filename);
+        category = matcher != null && matcher.matches() ? matcher.group(1) : null;
     }
 
     /** Fully qualified name of the module, falling back to the key used in ansible-doc output. */
@@ -293,20 +276,6 @@ class Doc {
         return fullName.substring(fullName.lastIndexOf('.') + 1);
     }
 
-    @Override
-    public String toString() {
-        return "Doc{" +
-                "module='" + module + '\'' +
-                ", versionAdded='" + version_added + '\'' +
-                ", shortDescription='" + short_description + '\'' +
-                ", filename='" + filename + '\'' +
-                ", description='" + description + '\'' +
-                ", deprecated=" + deprecated +
-                ", requirements=" + requirements +
-                ", notes=" + notes +
-                '}';
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Deprecated {
         public String alternative;
@@ -315,15 +284,6 @@ class Doc {
 
         @JsonAnySetter
         public Map<String, JsonNode> documentation = new TreeMap<>();
-
-        @Override
-        public String toString() {
-            return "Deprecated{" +
-                    "alternative='" + alternative + '\'' +
-                    ", why='" + why + '\'' +
-                    ", removed_in='" + removed_in + '\'' +
-                    '}';
-        }
     }
 }
 
@@ -335,6 +295,10 @@ class Option {
     public String elements;
     public Map<String, Option> suboptions;
     public JsonNode choiceDescriptions;
+    public Boolean required;
+    public String type;
+    public String version_added;
+    public String defaultValue;
 
     @JsonAnySetter
     public Map<String, JsonNode> documentation = new TreeMap<>();
@@ -356,14 +320,6 @@ class Option {
         }
         choices = result;
     }
-
-    public Boolean required;
-    public String type;
-    public String version_added;
-
-    @JsonProperty("default")
-    public String defaultValue;
-
 
     @JsonSetter("default")
     public void setDefaultValue(JsonNode o) {

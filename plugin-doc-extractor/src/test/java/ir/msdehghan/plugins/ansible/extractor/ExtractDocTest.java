@@ -1,10 +1,8 @@
 package ir.msdehghan.plugins.ansible.extractor;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -17,9 +15,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class ExtractDocTest {
-    private final ObjectMapper mapper = JsonMapper.builder()
-            .serializationInclusion(JsonInclude.Include.NON_EMPTY)
-            .build();
+    private final ObjectMapper mapper = ExtractDoc.MAPPER;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -63,6 +59,17 @@ public class ExtractDocTest {
         assertTrue(result.at("/metadata/status").isArray());
         assertEquals("Example Author", result.at("/documentation/author/0").asText());
         assertEquals("full", result.at("/documentation/attributes/check_mode/support").asText());
+    }
+
+    @Test
+    public void stripsMarkupFromDeprecation() throws Exception {
+        JsonNode result = convert("""
+                {"old": {"doc": {"module": "old", "deprecated": {
+                  "why": "Uses API I(v1).", "alternative": "Use M(ansible.builtin.uri) instead.", "removed_in": "2.0.0"
+                }}}}
+                """, "old");
+        assertEquals("Uses API 'v1'.", result.at("/deprecated/why").asText());
+        assertEquals("Use 'ansible.builtin.uri' instead.", result.at("/deprecated/alternative").asText());
     }
 
     @Test
