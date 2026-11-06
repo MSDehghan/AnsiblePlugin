@@ -63,13 +63,15 @@ public class TestCompletion extends BasePlatformTestCase {
     }
 
     public void testQualifiedFreeFormModule() {
-        List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile(),
-                "role/tasks/main.yml", "notAnsibleFile.yml");
-        assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
+        assertCompletesFilePaths("qualifiedFreeFormModule.yml");
     }
 
     public void testQualifiedImportPlaybook() {
-        List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile(),
+        assertCompletesFilePaths("qualifiedImportPlaybook.yml");
+    }
+
+    private void assertCompletesFilePaths(String testDataFile) {
+        List<String> completionVariants = myFixture.getCompletionVariants(testDataFile,
                 "role/tasks/main.yml", "notAnsibleFile.yml");
         assertContainsElements(completionVariants, "role", "notAnsibleFile.yml");
     }

@@ -249,13 +249,21 @@ class Doc {
     }
 
     // Only old style paths (ansible/modules/<category>/x.py) have a category, collections fall back to the collection name.
-    private static final Pattern LEGACY_MODULE_PATH = Pattern.compile(".*ansible/modules/(.+)/\\w+\\.py");
+    // Index arithmetic avoids regex backtracking across the whole path.
+    private static final String MODULES_DIRECTORY = "ansible/modules/";
+    private static final Pattern MODULE_FILENAME = Pattern.compile("\\w+\\.py");
 
     @JsonSetter("filename")
     public void setFilename(String filename) {
         this.filename = filename;
-        Matcher matcher = filename == null ? null : LEGACY_MODULE_PATH.matcher(filename);
-        category = matcher != null && matcher.matches() ? matcher.group(1) : null;
+        category = null;
+        if (filename == null) return;
+        int start = filename.lastIndexOf(MODULES_DIRECTORY) + MODULES_DIRECTORY.length();
+        int lastSlash = filename.lastIndexOf('/');
+        if (start >= MODULES_DIRECTORY.length() && lastSlash > start
+                && MODULE_FILENAME.matcher(filename.substring(lastSlash + 1)).matches()) {
+            category = filename.substring(start, lastSlash);
+        }
     }
 
     /** Fully qualified name of the module, falling back to the key used in ansible-doc output. */
