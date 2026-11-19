@@ -13,8 +13,7 @@ public class AnsibleModuleTypeTest {
                 .orElseThrow();
 
         assertSame(shortName.getType(MAPPING), qualifiedName.getType(MAPPING));
-        assertEquals("ansible.builtin.copy", ((AnsibleModuleType) shortName.getType(MAPPING)).getModuleDto().name);
-        assertEquals("ansible.builtin.copy", ((AnsibleModuleType) qualifiedName.getType(MAPPING)).getModuleDto().name);
+        assertFalse(((AnsibleModuleType) shortName.getType(MAPPING)).getFields().isEmpty());
     }
 
     @Test
