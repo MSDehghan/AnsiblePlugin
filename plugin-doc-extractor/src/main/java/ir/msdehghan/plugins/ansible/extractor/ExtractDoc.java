@@ -18,26 +18,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
 /**
  * Converts the output of <code>ansible-doc -t module --json &lt;module names&gt;</code>
- * into per module json files and a plugins_list.txt inside ./docs.
+ * into canonical module JSON files and a grouped plugins_list.txt inside ./docs.
  * <p>
  * Emits qualified names and short-name aliases, with ansible.builtin winning short-name collisions.
- * Pass <code>--fqcn</code> to emit only qualified names.
+ * Pass <code>--fqcn</code> to omit inferred short-name aliases.
  */
 public class ExtractDoc {
     private static final String BUILTIN_PREFIX = "ansible.builtin.";
+    private static final Pattern MODULE_NAME_CHARACTERS = Pattern.compile("[\\p{L}\\p{N}_.-]+");
 
     // import_playbook is modeled as a play field rather than a task module.
     private static final Set<String> SKIPPED_MODULES = Set.of("import_playbook");
@@ -88,16 +91,58 @@ public class ExtractDoc {
         }
     }
 
-    private static void writeModules(Path output, Map<String, AnsibleModuleDto> modules) throws IOException {
+    private static void writeModules(Path output, Map<String, ModuleDocs> modules) throws IOException {
         Files.createDirectories(output);
-        for (AnsibleModuleDto value : modules.values()) {
-            Files.write(output.resolve(value.name + ".json"), MAPPER.writeValueAsBytes(value));
+        Path index = output.resolve("plugins_list.txt");
+        List<String> previousRows = Files.isRegularFile(index, NOFOLLOW_LINKS) ? Files.readAllLines(index) : List.of();
+        List<String> rows = new ArrayList<>();
+        for (ModuleDocs module : modules.values()) {
+            String name = module.dto().name;
+            if (!isModuleName(name)) {
+                throw new IOException("Invalid module name: " + name);
+            }
+            Files.write(output.resolve(name + ".json"), MAPPER.writeValueAsBytes(module.dto()));
+            rows.add(module.aliases().isEmpty() ? name : name + "\t" + String.join("\t", module.aliases()));
         }
-        Files.writeString(output.resolve("plugins_list.txt"), String.join("\n", modules.keySet()));
+        for (String row : previousRows) {
+            // Only the first column owned a JSON file, including in the legacy one-name-per-line index.
+            String name = row.split("\t", 2)[0];
+            if (!modules.containsKey(name) && isModuleName(name)) {
+                Path obsolete = output.resolve(name + ".json");
+                if (Files.isRegularFile(obsolete, NOFOLLOW_LINKS)) {
+                    Files.deleteIfExists(obsolete);
+                }
+            }
+        }
+        Files.writeString(index, String.join("\n", rows));
     }
 
-    public static Map<String, AnsibleModuleDto> convertAll(Map<String, AnsibleModule> map, boolean fqcn) {
-        record Entry(String key, AnsibleModule module, String fullName) {}
+    private static boolean isModuleName(String name) {
+        return !name.startsWith(".") && !name.endsWith(".") && !name.contains("..")
+                && MODULE_NAME_CHARACTERS.matcher(name).matches();
+    }
+
+    record ModuleDocs(AnsibleModuleDto dto, Set<String> aliases) {}
+
+    private record Entry(String key, AnsibleModule module, String fullName) {}
+
+    static Map<String, ModuleDocs> convertAll(Map<String, AnsibleModule> map, boolean fqcn) {
+        List<Entry> entries = sortedEntries(map);
+        Map<String, Entry> sources = new TreeMap<>();
+        for (Entry e : entries) {
+            if (e.key().equals(e.fullName())) {
+                sources.put(e.fullName(), e);
+            } else {
+                sources.putIfAbsent(e.fullName(), e);
+            }
+        }
+        Map<String, ModuleDocs> result = new TreeMap<>();
+        sources.forEach((name, entry) -> result.put(name, new ModuleDocs(convert(entry.module(), name), new TreeSet<>())));
+        assignAliases(entries, result, fqcn);
+        return result;
+    }
+
+    private static List<Entry> sortedEntries(Map<String, AnsibleModule> map) {
         List<Entry> entries = new ArrayList<>();
         map.forEach((key, module) -> {
             if (module != null && module.doc != null) {
@@ -110,23 +155,32 @@ public class ExtractDoc {
         // Builtin modules go first so they win short name collisions with collections.
         entries.sort(Comparator.comparing((Entry e) -> !e.fullName().startsWith(BUILTIN_PREFIX))
                 .thenComparing(Entry::key));
-
-        Map<String, AnsibleModuleDto> result = new TreeMap<>();
-        for (Entry e : entries) {
-            // ansible-doc may resolve a redirect to another plugin_name. Keep the requested FQCN too.
-            Stream.of(e.fullName(), e.key().contains(".") ? e.key() : null, fqcn ? null : Doc.shortName(e.fullName()))
-                    .filter(Objects::nonNull)
-                    .forEach(name -> result.computeIfAbsent(name, n -> convert(e.module(), n, e.fullName())));
-        }
-        return result;
+        return entries;
     }
 
-    private static AnsibleModuleDto convert(AnsibleModule m, String name, String qualifiedName) {
+    private static void assignAliases(List<Entry> entries, Map<String, ModuleDocs> modules, boolean fqcn) {
+        Set<String> claimedNames = new HashSet<>(modules.keySet());
+        for (Entry e : entries) {
+            Set<String> aliases = modules.get(e.fullName()).aliases();
+            // ansible-doc may resolve a redirect to another plugin_name. Keep the requested FQCN too.
+            if (e.key().contains(".") && claimedNames.add(e.key())) {
+                aliases.add(e.key());
+            }
+            if (!fqcn) {
+                String shortName = Doc.shortName(e.fullName());
+                if (claimedNames.add(shortName)) {
+                    aliases.add(shortName);
+                }
+            }
+        }
+    }
+
+    private static AnsibleModuleDto convert(AnsibleModule m, String canonicalName) {
         AnsibleModuleDto moduleDto = new AnsibleModuleDto();
         Doc doc = m.doc;
 
-        moduleDto.name = name;
-        moduleDto.qualifiedName = qualifiedName;
+        moduleDto.name = canonicalName;
+        moduleDto.qualifiedName = canonicalName;
         moduleDto.collection = doc.collection;
         moduleDto.filename = doc.filename;
         moduleDto.addedIn = doc.version_added;

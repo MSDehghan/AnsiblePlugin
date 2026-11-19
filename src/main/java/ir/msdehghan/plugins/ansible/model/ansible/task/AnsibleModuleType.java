@@ -8,22 +8,20 @@ import ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 class AnsibleModuleType extends YamlType implements MappingType {
     // Strict so generated properties missing from AnsibleModuleDto fail instead of being dropped.
     static final ObjectReader READER = new ObjectMapper().readerFor(AnsibleModuleDto.class);
-    private AnsibleModuleDto moduleDto;
-    private List<YamlField> fields;
-    private List<YamlField> fieldsRO;
+    private volatile ModuleData moduleData;
 
+    private record ModuleData(AnsibleModuleDto dto, List<YamlField> fields) {
+    }
 
-    public AnsibleModuleType(String name) {
-        super(name);
+    public AnsibleModuleType(String canonicalName) {
+        super(canonicalName);
     }
 
     private static YamlField convertToYamlField(Map.Entry<String, AnsibleModuleDto.Field> field) {
@@ -31,48 +29,42 @@ class AnsibleModuleType extends YamlType implements MappingType {
     }
 
     public AnsibleModuleDto getModuleDto() {
-        ensureLoaded();
-        return moduleDto;
+        return getModuleData().dto();
     }
 
-    private void ensureLoaded() {
-        if (moduleDto == null) {
-            load();
-        }
+    private ModuleData getModuleData() {
+        ModuleData data = moduleData;
+        return data == null ? load() : data;
     }
 
-    private synchronized void load() {
-        if (moduleDto == null) {
+    private synchronized ModuleData load() {
+        if (moduleData == null) {
             try (InputStream pluginInputStream = AnsibleTask.class.getResourceAsStream("/docs/" + name + ".json")) {
                 if (pluginInputStream == null) {
                     throw new IllegalStateException("Ansible Module " + name + " not found. it's Unexpected!");
                 }
-                moduleDto = READER.readValue(pluginInputStream);
-                if (moduleDto == null) {
+                AnsibleModuleDto loadedModuleDto = READER.readValue(pluginInputStream);
+                if (loadedModuleDto == null) {
                     throw new IllegalStateException("Ansible Module " + name + " can't be loaded. it's Unexpected!");
                 }
                 // Modules without options have no fields.
-                fields = moduleDto.fields == null ? List.of() : moduleDto.fields.entrySet().stream()
-                        .map(AnsibleModuleType::convertToYamlField).collect(Collectors.toList());
-                fieldsRO = Collections.unmodifiableList(fields);
+                List<YamlField> loadedFields = loadedModuleDto.fields == null ? List.of() : loadedModuleDto.fields.entrySet().stream()
+                        .map(AnsibleModuleType::convertToYamlField).toList();
+                moduleData = new ModuleData(loadedModuleDto, loadedFields);
             } catch (IOException e) {
                 throw new IllegalStateException("Can't read ansible module " + name, e);
             }
         }
+        return moduleData;
     }
 
     @Override
     public List<YamlField> getFields() {
-        ensureLoaded();
-        return fieldsRO;
+        return getModuleData().fields();
     }
 
     @Override
     public Optional<YamlField> getFieldByName(String name) {
-        ensureLoaded();
-        if (fields != null) {
-            return fields.stream().filter(field -> field.getName().equals(name)).findAny();
-        }
-        return Optional.empty();
+        return getFields().stream().filter(field -> field.getName().equals(name)).findAny();
     }
 }

@@ -1,0 +1,4 @@
+- name: Play
+  hosts: h1
+  tasks:
+    - cop<caret>

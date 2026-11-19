@@ -1,12 +1,6 @@
-ansible.builtin.command
-ansible.builtin.copy
-ansible.builtin.include_tasks
-ansible.builtin.systemd
-command
-community.general.composer
-community.general.uptimerobot
-composer
-copy
-include_tasks
-systemd
-uptimerobot
+ansible.builtin.command	command
+ansible.builtin.copy	copy
+ansible.builtin.include_tasks	include_tasks
+ansible.builtin.systemd	systemd
+community.general.composer	composer
+community.general.uptimerobot	uptimerobot
