@@ -1,7 +1,9 @@
 package ir.msdehghan.plugins.ansible;
 
+import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,6 +138,35 @@ public class TestCompletion extends BasePlatformTestCase {
         List<String> completionVariants = myFixture.getCompletionVariants("role/tasks/main.yml");
         assertNotEmpty(completionVariants);
         assertContainsElements(completionVariants, "name", "state");
+    }
+
+    public void testBlockScalarHighlightingAndCompletionAfterPipe() {
+        String basePlaybook = """
+                - hosts: localhost
+                  tasks:
+                    - name: Set vnc passwords tightvnc
+                      shell: |
+                        set -o pipefail
+                        echo {{ item.vnc_default_password }} | vncpasswd -f > /home/{{ item.username }}/.vnc/passwd
+                      args:
+                        chdir: "/home/{{ item.username }}/.vnc"
+                        creates: "/home/{{ item.username }}/.vnc/passwd"
+                        executable: /bin/bash
+                      with_items: "{{ vnc_users }}"
+                      when: vnc_server == "tightvnc"
+                """;
+        myFixture.configureByText("blockScalar.yml", basePlaybook);
+        List<HighlightInfo> errors = myFixture.doHighlighting(HighlightSeverity.ERROR);
+        assertEmpty("Expected no syntax errors after '|' block scalar", errors);
+
+        myFixture.configureByText("blockScalarCompletion.yml", basePlaybook + """
+                    - name: Next task
+                      co<caret>
+                """);
+        myFixture.completeBasic();
+        List<String> lookupStrings = myFixture.getLookupElementStrings();
+        assertNotNull(lookupStrings);
+        assertContainsElements(lookupStrings, "copy", "command");
     }
 
     private void configureFileByTestName() {

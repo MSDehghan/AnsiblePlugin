@@ -4,6 +4,7 @@ import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 
@@ -55,6 +56,26 @@ public class TestRoleReference extends BasePlatformTestCase {
 
         assertSame(reference.getElement(), reference.handleElementRename("rename"));
         assertSame(reference.getElement(), reference.bindToElement(roleDirectory.getParent()));
+    }
+
+    public void testRoleNameResolveWithJinjaAndRegexMetacharacters() {
+        myFixture.copyDirectoryToProject("/", "/");
+
+        String[] roleValues = {"{", "{{", "{{role_name}}", "[", ".", ".+", "+", "a(b", "a\\b", "$role", ""};
+        for (String roleValue : roleValues) {
+            myFixture.configureByText("jinja-play.yml", """
+                    - hosts: localhost
+                      roles:
+                        - "<caret>%s"
+                    """.formatted(roleValue.replace("\\", "\\\\")));
+
+            PsiReference reference = myFixture.getReferenceAtCaretPositionWithAssertion();
+            assertNull("Expected unresolved role for: " + roleValue, reference.resolve());
+            if (reference instanceof PsiPolyVariantReference poly) {
+                assertEquals("Expected empty multiResolve for: " + roleValue, 0, poly.multiResolve(false).length);
+            }
+            myFixture.doHighlighting();
+        }
     }
 
     @Override

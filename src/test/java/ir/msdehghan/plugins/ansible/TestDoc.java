@@ -46,6 +46,21 @@ public class TestDoc extends BasePlatformTestCase {
         assertTrue(getDocInCaret(file).contains("Module ansible.builtin.copy"));
     }
 
+    public void testQualifiedModuleGenerateDocInsideKeyWithOptions() {
+        PsiFile file = myFixture.configureByText("qualifiedCopyWithOptions.yml", """
+                - name: Play
+                  hosts: h1
+                  tasks:
+                    - name: Copy file
+                      ansible.builtin.co<caret>py:
+                        src: /tmp/a
+                        dest: /tmp/b
+                """);
+        String doc = getDocInCaret(file);
+        assertNotNull(doc);
+        assertTrue(doc.contains("Module ansible.builtin.copy"));
+    }
+
     public void testModuleLookupDoc() {
         PsiFile file = configureFileByTestName();
         myFixture.completeBasic();

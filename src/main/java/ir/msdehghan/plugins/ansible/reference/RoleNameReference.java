@@ -34,15 +34,25 @@ public class RoleNameReference extends PsiReferenceBase.Poly<YAMLScalar> {
 
     @Override
     public @NotNull ResolveResult[] multiResolve(boolean incompleteCode) {
-        final Pattern rolePattern = Pattern.compile(ROLE_PATH_STRING.replace("[name]", getValue()));
+        final String roleName = getValue();
+        if (StringUtil.isEmptyOrSpaces(roleName) || roleName.contains("{{") || roleName.contains("}}")) {
+            return ResolveResult.EMPTY_ARRAY;
+        }
+        final Pattern rolePattern = Pattern.compile(ROLE_PATH_STRING.replace("[name]", Pattern.quote(roleName)));
 
         Collection<VirtualFile> yamlFiles = FileTypeIndex.getFiles(YAMLFileType.YML,
                 GlobalSearchScope.projectScope(myElement.getProject()));
         Set<PsiDirectory> roles = new HashSet<>();
+        PsiManager psiManager = PsiManager.getInstance(myElement.getProject());
         for (VirtualFile file : yamlFiles) {
             final String path = file.getPath();
             if (rolePattern.matcher(path).find()) {
-                roles.add(PsiManager.getInstance(myElement.getProject()).findDirectory(file.getParent().getParent()));
+                VirtualFile tasksDir = file.getParent();
+                VirtualFile roleDir = tasksDir != null ? tasksDir.getParent() : null;
+                PsiDirectory directory = roleDir != null ? psiManager.findDirectory(roleDir) : null;
+                if (directory != null) {
+                    roles.add(directory);
+                }
             }
         }
         return PsiElementResolveResult.createResults(roles);
