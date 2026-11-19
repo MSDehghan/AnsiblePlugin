@@ -22,8 +22,16 @@ jobs:
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v6
 
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.14'
+
+    - name: Install Ansible for the bundled module documentation
+      run: python -m pip install ansible==15.0.0
+
     - name: Build with Gradle
-      run: ./gradlew build --info
+      run: ./gradlew generatePluginDocs build buildPlugin --info
 
     - name: Verify Plugin on IntelliJ Platforms
       run: ./gradlew verifyPlugin --info
