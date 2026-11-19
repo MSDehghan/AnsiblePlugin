@@ -180,6 +180,21 @@ public class ExtractDocTest {
     }
 
     @Test
+    public void ignoresLongMalformedNamesInPreviousIndex() throws Exception {
+        Path input = temporaryFolder.newFile("plugins.json").toPath();
+        Path output = temporaryFolder.newFolder("docs").toPath();
+        String name = "café.tools.mod_Ⅻ-²";
+        Files.writeString(input, "{\"" + name + "\": {\"doc\": {\"plugin_name\": \"" + name + "\"}}}");
+        Path index = output.resolve("plugins_list.txt");
+        Files.writeString(index, "segment.".repeat(10_000) + "/invalid\n");
+
+        ExtractDoc.main(new String[]{"--input", input.toString(), "--output", output.toString(), "--fqcn"});
+
+        assertEquals(List.of(name), Files.readAllLines(index));
+        assertTrue(Files.isRegularFile(output.resolve(name + ".json")));
+    }
+
+    @Test
     public void handlesLongMarkupAndEscapedContent() {
         String content = "x".repeat(50_000);
         assertEquals("'" + content + "'", AnsibleModule.readDesc("C(" + content + ")"));
