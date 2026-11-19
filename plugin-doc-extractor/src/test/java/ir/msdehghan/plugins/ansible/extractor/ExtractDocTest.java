@@ -22,7 +22,7 @@ public class ExtractDocTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void preservesNestedOptionsAndDocumentation() throws Exception {
+    public void omitsUnusedDataWhileRetainingUsedFields() throws Exception {
         JsonNode result = convert("""
                 {"acme.cloud.server": {
                   "doc": {
@@ -47,19 +47,14 @@ public class ExtractDocTest {
                 }}
                 """, "acme.cloud.server");
 
-        String nested = "/fields/networks/suboptions/settings/suboptions/";
-        assertTrue(result.at(nested + "enabled/required").asBoolean());
-        assertEquals("false", result.at(nested + "enabled/defaultValue").asText());
-        assertEquals("status", result.at(nested + "state/aliases/0").asText());
-        assertEquals("up", result.at(nested + "state/choices/0").asText());
-        assertEquals("Running", result.at(nested + "state/choiceDescriptions/up").asText());
-        assertEquals("acme.cloud", result.at(nested + "state/documentation/version_added_collection").asText());
-        assertEquals("str", result.at("/returns/result/contains/id/type").asText());
-        assertEquals("- acme.cloud.server: {}\n", result.path("examples").asText());
-        assertEquals(1, result.at("/metadata/custom/a").asInt());
-        assertTrue(result.at("/metadata/status").isArray());
-        assertEquals("Example Author", result.at("/documentation/author/0").asText());
-        assertEquals("full", result.at("/documentation/attributes/check_mode/support").asText());
+        assertEquals("list", result.at("/fields/networks/type").asText());
+        assertEquals("dict", result.at("/fields/networks/elements").asText());
+        assertFalse(result.at("/fields/networks").has("suboptions"));
+        assertEquals("result", result.at("/returnFields/0").asText());
+        for (String unused : List.of("name", "qualifiedName", "collection", "filename", "returns",
+                "examples", "metadata", "documentation")) {
+            assertFalse(unused, result.has(unused));
+        }
     }
 
     @Test
@@ -105,7 +100,7 @@ public class ExtractDocTest {
     @Test
     public void usesQualifiedInputKeyWhenCollectionMetadataIsAbsent() throws Exception {
         JsonNode result = convert("{\"acme.cloud.server\": {\"doc\": {\"module\": \"server\"}}}", "acme.cloud.server");
-        assertEquals("acme.cloud.server", result.path("qualifiedName").asText());
+        assertFalse(result.has("qualifiedName"));
     }
 
     @Test
@@ -120,9 +115,7 @@ public class ExtractDocTest {
         assertEquals(Set.of("new.cloud.server", "legacy"), modules.keySet());
         var server = modules.get("new.cloud.server");
         assertEquals(List.of("alpha.cloud.server", "old.cloud.server"), List.copyOf(server.aliases()));
-        assertEquals("new.cloud.server", server.dto().qualifiedName);
         assertEquals("First redirect", server.dto().shortDescription);
-        assertEquals("legacy", modules.get("legacy").dto().name);
         assertTrue(modules.get("legacy").aliases().isEmpty());
     }
 
@@ -162,8 +155,6 @@ public class ExtractDocTest {
 
         assertEquals(List.of("ansible.builtin.copy\tansible.builtin.copied\tcopy"), Files.readAllLines(index));
         JsonNode canonical = mapper.readTree(output.resolve("ansible.builtin.copy.json").toFile());
-        assertEquals("ansible.builtin.copy", canonical.path("name").asText());
-        assertEquals("ansible.builtin.copy", canonical.path("qualifiedName").asText());
         assertEquals("Canonical", canonical.path("shortDescription").asText());
         assertFalse(canonical.has("fields"));
         try (var files = Files.list(output)) {

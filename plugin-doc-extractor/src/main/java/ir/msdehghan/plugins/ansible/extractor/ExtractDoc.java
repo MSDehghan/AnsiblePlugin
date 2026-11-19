@@ -96,8 +96,9 @@ public class ExtractDoc {
         Path index = output.resolve("plugins_list.txt");
         List<String> previousRows = Files.isRegularFile(index, NOFOLLOW_LINKS) ? Files.readAllLines(index) : List.of();
         List<String> rows = new ArrayList<>();
-        for (ModuleDocs module : modules.values()) {
-            String name = module.dto().name;
+        for (Map.Entry<String, ModuleDocs> entry : modules.entrySet()) {
+            String name = entry.getKey();
+            ModuleDocs module = entry.getValue();
             if (!isModuleName(name)) {
                 throw new IOException("Invalid module name: " + name);
             }
@@ -179,10 +180,11 @@ public class ExtractDoc {
         AnsibleModuleDto moduleDto = new AnsibleModuleDto();
         Doc doc = m.doc;
 
-        moduleDto.name = canonicalName;
-        moduleDto.qualifiedName = canonicalName;
-        moduleDto.collection = doc.collection;
-        moduleDto.filename = doc.filename;
+        // Kept here for future features; the IDE currently does not consume these fields.
+        // moduleDto.name = canonicalName;
+        // moduleDto.qualifiedName = canonicalName;
+        // moduleDto.collection = doc.collection;
+        // moduleDto.filename = doc.filename;
         moduleDto.addedIn = doc.version_added;
         moduleDto.category = doc.category != null ? doc.category : doc.collection;
         moduleDto.description = doc.description;
@@ -190,17 +192,17 @@ public class ExtractDoc {
         moduleDto.notes = doc.notes;
         moduleDto.requirements = doc.requirements;
         moduleDto.returnFields = m.returnFields != null ? m.returnFields.keySet() : null;
-        moduleDto.returns = m.returnFields;
-        moduleDto.examples = m.examples;
-        moduleDto.metadata = m.metadata;
-        moduleDto.documentation = doc.documentation;
+        // moduleDto.returns = m.returnFields;
+        // moduleDto.examples = m.examples;
+        // moduleDto.metadata = m.metadata;
+        // moduleDto.documentation = doc.documentation;
 
         if (doc.deprecated != null) {
             moduleDto.deprecated = new AnsibleModuleDto.Deprecated();
             moduleDto.deprecated.alternative = AnsibleModule.readDesc(doc.deprecated.alternative);
             moduleDto.deprecated.removedIn = doc.deprecated.removed_in;
             moduleDto.deprecated.why = AnsibleModule.readDesc(doc.deprecated.why);
-            moduleDto.deprecated.documentation = doc.deprecated.documentation;
+            // moduleDto.deprecated.documentation = doc.deprecated.documentation;
         }
 
         moduleDto.fields = convertOptions(doc.options);
@@ -218,15 +220,16 @@ public class ExtractDoc {
             Field field = new Field();
             field.aliases = option.aliases;
             field.choices = option.choices;
-            field.choiceDescriptions = option.choiceDescriptions;
+            // field.choiceDescriptions = option.choiceDescriptions;
             field.defaultValue = option.defaultValue;
             field.description = option.description;
             field.elements = option.elements;
             field.required = option.required;
             field.type = option.type;
             field.versionAdded = option.version_added;
-            field.suboptions = convertOptions(option.suboptions);
-            field.documentation = option.documentation;
+            // Nested options are not currently used by completion or documentation.
+            // field.suboptions = convertOptions(option.suboptions);
+            // field.documentation = option.documentation;
             fields.put(optionEntry.getKey(), field);
         }
         return fields;
