@@ -70,3 +70,4 @@ src/ansible
 src/main/resources/docs
 src/main/resources/plugins_list.txt
 plugin-doc-extractor/src/main/resources/plugins.json
+/docs/
