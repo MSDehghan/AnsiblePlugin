@@ -6,9 +6,8 @@
     <description>
         <![CDATA[
         <p>
-        Helps writing and working with ansible playbooks and roles. <br/>
-        This plugin can auto-complete all play and task fields. <br/>
-        Not only Ansible modules are recognized but also all of them have full documentation, right in your IDE.
+        Write Ansible playbooks and roles with completion for playbook fields, role fields, and role names.
+        Completion and offline Quick Documentation are available for bundled modules and their options.
         </p>
         <p>
         To report bugs and feature requests you can create a GitHub issue. For code contribution you can create pull requests.<br/>
@@ -22,14 +21,15 @@
 
     <change-notes>
         <![CDATA[
-        <h2>1.1.0</h2>
+        <h2>2.0.0</h2>
         <ul>
-          <li>Require IntelliJ Platform 2026.2+ and Java 25</li>
-          <li>Upgrade Gradle, IntelliJ Platform Gradle Plugin and other build tools to their latest versions</li>
-          <li>Bundle Jackson instead of relying on the IDE's internal copy</li>
-          <li>Fix an error on empty YAML files</li>
+          <li>Require an IntelliJ Platform 2026.2 or newer IDE. Building from source requires JDK 25.</li>
+          <li>Support fully qualified module names in completion and Quick Documentation while retaining short names.</li>
+          <li>Bundle Ansible 15.0.0 module documentation. The generator preserves nested options, return values, and examples, and shares documentation between aliases.</li>
+          <li>Fix errors when opening empty YAML files or resolving role names with special characters.</li>
+          <li>Enable plugin error and UI freeze reporting through JetBrains Marketplace.</li>
         </ul>
-        <h2>1.0</h2>
+        <h2>1.0.0</h2>
         <ul>
           <li>Fix compatibility issues with 2024.3+ IDEs</li>
           <li>Fix NPE on rare cases</li>

@@ -3,30 +3,36 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/ir.msdehghan.plugins.ansible.svg)](https://plugins.jetbrains.com/plugin/14893-ansible)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/ir.msdehghan.plugins.ansible.svg)](https://plugins.jetbrains.com/plugin/14893-ansible)
 
-Plugin that helps develop ansible files.
+An IntelliJ Platform plugin for writing Ansible playbooks and roles.
+
+## Installation
+
+Install [Ansible](https://plugins.jetbrains.com/plugin/14893-ansible) from the JetBrains Marketplace in your IDE. Plugin 2.0.0 requires an IntelliJ Platform 2026.2 or newer IDE with YAML and JSON support.
 
 ## Features
-* Autocomplete playbooks fields
-* Autocomplete role fields
-* Autocomplete Ansible modules fields
-* Access to all ansible docs locally
-* Suggest role names
+
+* Completion for playbook fields, role fields, and role names.
+* Completion and Quick Documentation for bundled Ansible modules and their options, using short or fully qualified module names.
+* Offline module documentation for the Ansible collections bundled with the plugin.
 
 ## Roadmap
-* Ansible FQCN support
 * Suggest defined variables
 * Go to variable
 * Go to play
 
-## Contribution
-To report bugs and feature requests you can create a Github issue. For code contribution you can create pull requests.
+## Building from source
 
-To regenerate the plugin's module documentation:
+Use JDK 25, Python 3.14, and Ansible 15.0.0. Generate the bundled module docs before packaging the plugin:
 
 ```sh
-./gradlew generatePluginDocs
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install ansible==15.0.0
+./gradlew generatePluginDocs buildPlugin
 ```
 
-See [the extractor instructions](plugin-doc-extractor/README.md) for requirements and details.
+The plugin ZIP is written to `build/distributions/`. See [the extractor instructions](plugin-doc-extractor/README.md) for details about using a different Ansible environment.
 
-Any type of contribution is **highly** appreciated.
+## Contributing
+
+Report bugs or request features in [GitHub Issues](https://github.com/MSDehghan/AnsiblePlugin/issues). Pull requests are welcome.
