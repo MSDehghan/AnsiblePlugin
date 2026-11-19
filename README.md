@@ -12,7 +12,7 @@ Install [Ansible](https://plugins.jetbrains.com/plugin/14893-ansible) from the J
 ## Features
 
 * Completion for playbook fields, role fields, and role names.
-* Completion and Quick Documentation for bundled Ansible modules and their options, using short or fully qualified module names (for example, `copy` or `ansible.builtin.copy`).
+* Completion and Quick Documentation for bundled Ansible modules and their options, using short or fully qualified module names.
 * Offline module documentation for the Ansible collections bundled with the plugin.
 
 ## Roadmap
@@ -22,7 +22,7 @@ Install [Ansible](https://plugins.jetbrains.com/plugin/14893-ansible) from the J
 
 ## Building from source
 
-Use JDK 25, Python 3.14, and Ansible 15.0.0 to match CI. Generate the bundled module docs before packaging the plugin:
+Use JDK 25, Python 3.14, and Ansible 15.0.0. Generate the bundled module docs before packaging the plugin:
 
 ```sh
 python3 -m venv .venv

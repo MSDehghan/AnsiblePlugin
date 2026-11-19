@@ -7,8 +7,7 @@
         <![CDATA[
         <p>
         Write Ansible playbooks and roles with completion for playbook fields, role fields, and role names.
-        Use short or fully qualified module names, such as <code>copy</code> and <code>ansible.builtin.copy</code>,
-        with completion and offline Quick Documentation for bundled modules and their options.
+        Completion and offline Quick Documentation are available for bundled modules and their options.
         </p>
         <p>
         To report bugs and feature requests you can create a GitHub issue. For code contribution you can create pull requests.<br/>
