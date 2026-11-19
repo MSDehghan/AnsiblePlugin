@@ -57,6 +57,12 @@ public class TestCompletion extends BasePlatformTestCase {
         assertTrue(completionVariants.indexOf("composer") < completionVariants.indexOf("community.general.composer"));
     }
 
+    public void testShortAndQualifiedBuiltinNamesAreBothAvailable() {
+        List<String> completionVariants = myFixture.getCompletionVariants("copyModuleNames.yml");
+        assertContainsElements(completionVariants, "copy", "ansible.builtin.copy");
+        assertTrue(completionVariants.indexOf("copy") < completionVariants.indexOf("ansible.builtin.copy"));
+    }
+
     public void testQualifiedModuleOptionSuggestion() {
         List<String> completionVariants = myFixture.getCompletionVariants(getTestDataFile());
         assertContainsElements(completionVariants, "dest", "backup");

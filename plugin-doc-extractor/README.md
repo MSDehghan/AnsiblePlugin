@@ -33,11 +33,18 @@ The default input is the subproject's `src/main/resources/plugins.json`. Output 
 ./gradlew :plugin-doc-extractor:run --args="--input /path/plugins.json --output /path/docs"
 ```
 
-The output contains one JSON file per name and a sorted `plugins_list.txt`. By default,
-both qualified names and short-name aliases are emitted. Built-ins take priority for
-short-name collisions; other collisions are resolved in alphabetical order. Every qualified
-name, including redirected input names, remains available. Add `--fqcn` to emit only
-qualified names.
+The output contains one `<canonical-name>.json` file and one `plugins_list.txt` row per
+canonical module. Each UTF-8 row starts with the canonical name, followed by zero or more
+tab-separated aliases. Rows are sorted by canonical name, and aliases are sorted within each row.
+For example, `ansible.builtin.copy` and `copy` share `ansible.builtin.copy.json`:
+
+```text
+ansible.builtin.copy	copy
+```
+
+Built-ins take priority for short-name collisions; other collisions are resolved in input-name
+alphabetical order. Qualified redirects are retained as aliases. Add `--fqcn` to omit inferred
+short aliases while keeping qualified redirects and legacy modules without a qualified name.
 
 `fields` contains module options. Each option's `suboptions` recursively retains nested
 options, including options within lists of dictionaries. Modules without options omit `fields`.
@@ -49,5 +56,7 @@ Module identity is stored in `qualifiedName`, `collection`, and `filename`. Addi
 option, and deprecation metadata is retained in `documentation`. Map-shaped choices retain
 their descriptions in `choiceDescriptions` alongside the normalized `choices` list.
 
-To install the output manually, copy the JSON files into `src/main/resources/docs/` and
-`plugins_list.txt` into `src/main/resources/`, or use `./gradlew generatePluginDocs`.
+To install the output manually, replace the generated JSON files in `src/main/resources/docs/`
+and `src/main/resources/plugins_list.txt` together. Do not merge with an older installation:
+remove obsolete generated files, including the old short-name and redirect JSON files. Alternatively,
+`./gradlew generatePluginDocs` installs both and removes stale files automatically.

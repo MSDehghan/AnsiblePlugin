@@ -51,19 +51,24 @@ public class AnsibleModuleDtoParsingTest {
                   "examples": "- acme.cloud.server: {}\\n",
                   "metadata": {"status": [], "custom": {"a": 1}}
                 },
-                "acme.cloud.ping": {"doc": {"module": "ping", "collection": "acme.cloud"}}}
+                "acme.cloud.ping": {"doc": {"module": "ping", "collection": "acme.cloud"}},
+                "old.cloud.server": {"doc": {"plugin_name": "acme.cloud.server"}}}
                 """);
         ExtractDoc.main(new String[]{"--input", input.toString(), "--output", output.toString()});
 
-        // The strict IDE reader must accept every generated file, including short-name aliases.
+        List<String> rows = Files.readAllLines(output.resolve("plugins_list.txt"));
+        assertEquals(List.of("acme.cloud.ping\tping", "acme.cloud.server\told.cloud.server\tserver"), rows);
+        for (String row : rows) {
+            String canonicalName = row.split("\t", 2)[0];
+            AnsibleModuleDto dto = AnsibleModuleType.READER.readValue(output.resolve(canonicalName + ".json").toFile());
+            assertEquals(canonicalName, dto.name);
+        }
         try (var files = Files.list(output)) {
-            for (Path file : files.filter(f -> f.toString().endsWith(".json")).toList()) {
-                assertNotNull(file.toString(), AnsibleModuleType.READER.readValue(file.toFile()));
-            }
+            assertEquals(List.of("acme.cloud.ping.json", "acme.cloud.server.json", "plugins_list.txt"),
+                    files.map(f -> f.getFileName().toString()).sorted().toList());
         }
 
-        AnsibleModuleDto dto = AnsibleModuleType.READER.readValue(output.resolve("server.json").toFile());
-        assertEquals("server", dto.name);
+        AnsibleModuleDto dto = AnsibleModuleType.READER.readValue(output.resolve("acme.cloud.server.json").toFile());
         assertEquals("acme.cloud.server", dto.qualifiedName);
         assertEquals("acme.cloud", dto.collection);
         assertEquals("/collections/acme/cloud/plugins/modules/server.py", dto.filename);
@@ -88,7 +93,7 @@ public class AnsibleModuleDtoParsingTest {
         assertEquals("Running", state.choiceDescriptions.get("up").asText());
         assertEquals("acme.cloud", state.documentation.get("version_added_collection").asText());
 
-        assertNull(AnsibleModuleType.READER.<AnsibleModuleDto>readValue(output.resolve("ping.json").toFile()).fields);
+        assertNull(AnsibleModuleType.READER.<AnsibleModuleDto>readValue(output.resolve("acme.cloud.ping.json").toFile()).fields);
     }
 
     @Test

@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import static ir.msdehghan.plugins.ansible.model.ansible.AnsibleFields.*;
 import static ir.msdehghan.plugins.ansible.model.yml.type.api.YamlField.Relation.MAPPING;
@@ -109,10 +110,14 @@ public class AnsibleTask extends YamlMappingType {
 
     private void loadPluginNames() {
         try (InputStream pluginsInputStream = AnsibleTask.class.getResourceAsStream("/plugins_list.txt")) {
-            BufferedReader pluginsReader = new BufferedReader(new InputStreamReader(pluginsInputStream));
-            String name;
-            while ((name = pluginsReader.readLine()) != null) {
-                addField(new AnsibleModuleField(name));
+            BufferedReader pluginsReader = new BufferedReader(new InputStreamReader(pluginsInputStream, StandardCharsets.UTF_8));
+            String line;
+            while ((line = pluginsReader.readLine()) != null) {
+                String[] names = line.split("\t", -1);
+                AnsibleModuleType moduleType = new AnsibleModuleType(names[0]);
+                for (String name : names) {
+                    addField(new AnsibleModuleField(name, moduleType));
+                }
             }
         } catch (IOException e) {
             throw new IllegalStateException("Can't read ansible module names.", e);

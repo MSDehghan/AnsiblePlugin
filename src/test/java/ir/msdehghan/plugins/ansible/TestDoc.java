@@ -36,6 +36,16 @@ public class TestDoc extends BasePlatformTestCase {
         assertTrue(doc.contains("Use the Uptime Robot API v3 directly"));
     }
 
+    public void testShortModuleGenerateDocUsesSelectedName() {
+        PsiFile file = myFixture.configureByFile("shortCopyModuleDoc.yml");
+        assertTrue(getDocInCaret(file).contains("Module copy"));
+    }
+
+    public void testQualifiedModuleGenerateDocUsesSelectedName() {
+        PsiFile file = myFixture.configureByFile("qualifiedCopyModuleDoc.yml");
+        assertTrue(getDocInCaret(file).contains("Module ansible.builtin.copy"));
+    }
+
     public void testModuleLookupDoc() {
         PsiFile file = configureFileByTestName();
         myFixture.completeBasic();
@@ -48,8 +58,14 @@ public class TestDoc extends BasePlatformTestCase {
     }
 
     public void testModuleOptionGenerateDoc() {
-        PsiFile file = configureFileByTestName();
-        String doc = getDocInCaret(file);
+        assertCopyOptionDoc(getDocInCaret(configureFileByTestName()));
+    }
+
+    public void testQualifiedModuleOptionGenerateDoc() {
+        assertCopyOptionDoc(getDocInCaret(configureFileByTestName()));
+    }
+
+    private void assertCopyOptionDoc(String doc) {
         assertTrue(doc.contains("Required"));
         assertTrue(doc.contains("Remote absolute path where the file should be copied to"));
     }
