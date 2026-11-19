@@ -51,5 +51,6 @@
         <fileIconProvider implementation="ir.msdehghan.plugins.ansible.icon.AnsibleFileIconProvider" />
         <fileType name="YAML" patterns="*playbook.yml;*playbook.yaml" fileNames="main.yml;main.yaml" />
         <json.catalog.exclusion implementation="ir.msdehghan.plugins.ansible.JsonSchemaExclude" />
+        <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
     </extensions>
 </idea-plugin>
